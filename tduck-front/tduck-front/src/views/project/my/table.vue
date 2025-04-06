@@ -3,7 +3,7 @@
     <el-table
       :data="projectList"
       border
-      empty-text="暂无数据"
+      :empty-text="null"
       highlight-current-row
       style="width: 100%"
       @row-click="handleRowClick"
@@ -73,6 +73,12 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <div v-if="projectList.length === 0" class="empty-container">
+      <data-empty icon="el-icon-document" desc="暂无项目数据">
+        <el-button type="primary" icon="el-icon-plus" @click="$emit('create')">创建新表单</el-button>
+      </data-empty>
+    </div>
   </div>
 </template>
 
@@ -118,5 +124,13 @@ export default {
 
 .el-table tr {
   cursor: pointer;
+}
+
+.empty-container {
+  padding: 40px 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
 }
 </style>

@@ -84,18 +84,21 @@
           </el-row>
         </el-form>
       </div>
-      <form-card-list
-        v-if="dataShowType == 'card'"
-        v-loading="projectListLoading"
-        :project-list.sync="projectList"
-        @refresh="queryProjectPage"
-      />
-      <my-form-table
-        v-if="dataShowType == 'table'"
-        v-loading="projectListLoading"
-        :project-list.sync="projectList"
-        @refresh="queryProjectPage"
-      />
+      <div class="content-container">
+        <custom-loading :visible="projectListLoading" text="正在加载项目数据..." />
+        <form-card-list
+          v-if="dataShowType == 'card'"
+          :project-list.sync="projectList"
+          @refresh="queryProjectPage"
+          @create="createFormVisible = true"
+        />
+        <my-form-table
+          v-if="dataShowType == 'table'"
+          :project-list.sync="projectList"
+          @refresh="queryProjectPage"
+          @create="createFormVisible = true"
+        />
+      </div>
       <div class="project-page-view">
         <el-pagination
           v-if="total > 10"
@@ -129,12 +132,14 @@ import { createFormRequest, getUserFormFolderTreeRequest, pageFormRequest, updat
 import FormCardList from './card'
 import mixin from './mixin'
 import MyFormTable from './table'
+import CustomLoading from '@/components/Loading/index.vue'
 
 export default {
   name: 'MyProject',
   components: {
     MyFormTable,
-    FormCardList
+    FormCardList,
+    CustomLoading
   },
   mixins: [mixin],
   data() {
@@ -231,6 +236,11 @@ export default {
 
 .form-breadcrumb {
   margin: 10px 50px 10px 0px;
+}
+
+.content-container {
+  position: relative;
+  min-height: 300px;
 }
 
 ::v-deep .el-breadcrumb__inner {

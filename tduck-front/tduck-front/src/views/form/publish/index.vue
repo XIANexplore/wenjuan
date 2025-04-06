@@ -73,6 +73,7 @@
 <script>
 import VueQr from 'vue-qr'
 import { getFormStatusRequest, publishFormRequest, stopPublishFormRequest } from '@/api/project/publish'
+import { getSystemInfoConfig } from '@/api/mange/config'
 
 export default {
   name: 'ProjectPublish',
@@ -89,11 +90,35 @@ export default {
   },
   mounted() {
     this.formKey = this.$route.query.key
-    let url = window.location.protocol + '//' + window.location.host
-    this.writeLink = `${url}/s/${this.formKey}`
+    this.getSystemConfig()
     this.getProjectStatus()
   },
   methods: {
+    getSystemConfig() {
+      getSystemInfoConfig()
+        .then((res) => {
+          if (res.data) {
+            const config = JSON.parse(res.data)
+            if (config.webBaseUrl) {
+              // 使用系统配置的域名
+              this.writeLink = `${config.webBaseUrl}/s/${this.formKey}`
+            } else {
+              // 如果没有配置域名，则使用当前域名
+              let url = window.location.protocol + '//' + window.location.host
+              this.writeLink = `${url}/s/${this.formKey}`
+            }
+          } else {
+            // 如果没有获取到配置，则使用当前域名
+            let url = window.location.protocol + '//' + window.location.host
+            this.writeLink = `${url}/s/${this.formKey}`
+          }
+        })
+        .catch(() => {
+          // 如果获取配置失败，则使用当前域名
+          let url = window.location.protocol + '//' + window.location.host
+          this.writeLink = `${url}/s/${this.formKey}`
+        })
+    },
     getProjectStatus() {
       getFormStatusRequest(this.formKey).then((res) => {
         if (res.data.status == 2) {

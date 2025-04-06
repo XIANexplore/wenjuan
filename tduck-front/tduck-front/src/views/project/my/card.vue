@@ -41,8 +41,10 @@
         </el-card>
       </el-col>
     </el-row>
-    <div v-if="projectList.length == 0">
-      <el-empty slot="empty" description="暂无数据" />
+    <div v-if="projectList.length == 0" class="empty-container">
+      <data-empty icon="el-icon-document" desc="暂无项目数据">
+        <el-button type="primary" icon="el-icon-plus" @click="$emit('create')">创建新表单</el-button>
+      </data-empty>
     </div>
   </div>
 </template>
@@ -251,5 +253,12 @@ export default {
 
 ::v-deep .el-card {
   border-radius: 10px !important;
+}
+
+.empty-container {
+  padding: 40px 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 </style>

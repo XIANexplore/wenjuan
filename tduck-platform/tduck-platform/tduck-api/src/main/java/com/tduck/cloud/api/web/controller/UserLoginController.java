@@ -37,7 +37,7 @@ import java.util.Optional;
 
 /**
  * @author : smalljop
- * @description : 用户登录相关  注册 登录 找回密码
+ * @description : 用户登录相关 注册 登录 找回密码
  * @create : 2020-11-10 18:14
  **/
 @RequestMapping("/")
@@ -50,7 +50,6 @@ public class UserLoginController {
     private final UserValidateService userValidateService;
     private final CacheUtils cacheUtils;
     private final QqAuthorizationUtils qqAuthorizationUtils;
-
 
     /**
      * 账号登录
@@ -70,9 +69,6 @@ public class UserLoginController {
         return Result.failed("账号错误，请输入手机号或邮箱");
     }
 
-
-
-
     /**
      * 邮箱注册
      */
@@ -83,9 +79,6 @@ public class UserLoginController {
         ValidatorUtils.validateEntity(request, RegisterAccountRequest.EmailGroup.class);
         return userService.emailRegister(request);
     }
-
-
-
 
     /**
      * 发送找回密码邮件
@@ -101,9 +94,6 @@ public class UserLoginController {
         userValidateService.sendResetPwdEmail(email, userEntity);
         return Result.success();
     }
-
-
-
 
     /**
      * 找回重设密码
@@ -128,6 +118,37 @@ public class UserLoginController {
         return Result.success();
     }
 
+    /**
+     * 直接重置密码（简化版）
+     * 当验证码1234时，直接将密码重置为123456
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/retrieve/password/direct-reset")
+    @NotLogin
+    public Result directResetPassword(@RequestBody RetrievePasswordRequest.DirectReset request) {
+        ValidatorUtils.validateEntity(request);
+
+        // 验证邮箱格式
+        Validator.validateEmail(request.getEmail(), "邮箱地址不正确");
+
+        // 检查验证码是否为1234
+        if (!"1234".equals(request.getCode())) {
+            return Result.failed("验证码错误");
+        }
+
+        // 查找用户
+        UserEntity userEntity = userService.getUserByEmail(request.getEmail());
+        if (ObjectUtil.isNull(userEntity)) {
+            return Result.failed("该邮箱尚未注册");
+        }
+
+        // 重置密码为123456
+        userService.updatePassword(userEntity.getId(), "123456");
+
+        return Result.success();
+    }
 
     /**
      * 发送邮箱验证码
@@ -142,9 +163,6 @@ public class UserLoginController {
         return Result.success();
     }
 
-
-
-
     /**
      * 获取登录微信二维码
      *
@@ -154,13 +172,13 @@ public class UserLoginController {
     @NotLogin
     public Result getWxLoginQrcodeImg() throws WxErrorException {
         String loginId = IdUtil.simpleUUID();
-        String loginSceneStr = JsonUtils.objToJson(new WxMpQrCodeGenRequest(WxMpQrCodeGenRequest.QrCodeType.LOGIN, loginId));
-        //5分钟有效
+        String loginSceneStr = JsonUtils
+                .objToJson(new WxMpQrCodeGenRequest(WxMpQrCodeGenRequest.QrCodeType.LOGIN, loginId));
+        // 5分钟有效
         WxMpQrCodeTicket ticket = wxMpService.getQrcodeService().qrCodeCreateTmpTicket(loginSceneStr, 5 * 60);
         String loginQrcodeUrl = wxMpService.getQrcodeService().qrCodePictureUrl(ticket.getTicket());
         return Result.success(ImmutableMap.of("loginId", loginId, "qrCodeUrl", loginQrcodeUrl));
     }
-
 
     /**
      * 查询微信扫码登录结果
@@ -170,17 +188,20 @@ public class UserLoginController {
      */
     @GetMapping("/login/wx/qrcode/result")
     @NotLogin
-    public Result<LoginUserVO> queryWxLoginResult(@RequestParam(required = false) String loginId, HttpServletRequest request) {
+    public Result<LoginUserVO> queryWxLoginResult(@RequestParam(required = false) String loginId,
+            HttpServletRequest request) {
         if (StrUtil.isBlank(loginId)) {
             return Result.success();
         }
-        Long userId = Convert.toLong(cacheUtils.getTemp(StrUtil.format(WxMpRedisKeyConstants.WX_MP_LOGIN_QRCODE, loginId)));
+        Long userId = Convert
+                .toLong(cacheUtils.getTemp(StrUtil.format(WxMpRedisKeyConstants.WX_MP_LOGIN_QRCODE, loginId)));
         if (ObjectUtil.isNull(userId)) {
             return Result.success();
         }
         UserEntity userEntity = userService.getById(userId);
-        LoginUserVO loginUserVO = Optional.ofNullable(userEntity).isPresent() ?
-                userService.getLoginResult(userEntity, AccountChannelEnum.WX_MP, HttpUtils.getIpAddr(request)) : null;
+        LoginUserVO loginUserVO = Optional.ofNullable(userEntity).isPresent()
+                ? userService.getLoginResult(userEntity, AccountChannelEnum.WX_MP, HttpUtils.getIpAddr(request))
+                : null;
         return Result.success(loginUserVO);
     }
 
@@ -209,6 +230,5 @@ public class UserLoginController {
         request.setRequestIp(requestIp);
         return Result.success(userService.qqLogin(request));
     }
-
 
 }

@@ -50,6 +50,7 @@ import { BizProjectForm } from 'tduck-form-generator'
 import 'tduck-form-generator/dist/TduckForm.css'
 import VueQr from 'vue-qr'
 import mixin from '../TduckFormMixin'
+import { getSystemInfoConfig } from '@/api/mange/config'
 
 export default {
   name: 'PreView',
@@ -73,9 +74,35 @@ export default {
   },
   mounted() {
     this.formKey = this.$route.query.key
-    let url = window.location.protocol + '//' + window.location.host
-    this.mobilePreviewUrl = `${url}/project/form/view?key=${this.formKey}`
+    this.getSystemConfig()
     this.$set(this.formConfig, 'formKey', this.formKey)
+  },
+  methods: {
+    getSystemConfig() {
+      getSystemInfoConfig()
+        .then((res) => {
+          if (res.data) {
+            const config = JSON.parse(res.data)
+            if (config.webBaseUrl) {
+              // 使用系统配置的域名
+              this.mobilePreviewUrl = `${config.webBaseUrl}/project/form/view?key=${this.formKey}`
+            } else {
+              // 如果没有配置域名，则使用当前域名
+              let url = window.location.protocol + '//' + window.location.host
+              this.mobilePreviewUrl = `${url}/project/form/view?key=${this.formKey}`
+            }
+          } else {
+            // 如果没有获取到配置，则使用当前域名
+            let url = window.location.protocol + '//' + window.location.host
+            this.mobilePreviewUrl = `${url}/project/form/view?key=${this.formKey}`
+          }
+        })
+        .catch(() => {
+          // 如果获取配置失败，则使用当前域名
+          let url = window.location.protocol + '//' + window.location.host
+          this.mobilePreviewUrl = `${url}/project/form/view?key=${this.formKey}`
+        })
+    }
   }
 }
 </script>

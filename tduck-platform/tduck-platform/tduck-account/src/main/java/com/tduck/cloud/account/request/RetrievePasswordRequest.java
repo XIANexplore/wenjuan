@@ -21,7 +21,6 @@ public class RetrievePasswordRequest {
         private String code;
     }
 
-
     /**
      * 重置密码
      */
@@ -33,6 +32,18 @@ public class RetrievePasswordRequest {
         private String password;
         @NotBlank(message = "确认密码不能为空")
         private String rePassword;
+    }
+
+    /**
+     * 直接重置密码（简化版）
+     */
+    @Data
+    public static class DirectReset {
+        @NotBlank(message = "邮箱不能为空")
+        private String email;
+
+        @NotBlank(message = "验证码不能为空")
+        private String code;
     }
 
 }
