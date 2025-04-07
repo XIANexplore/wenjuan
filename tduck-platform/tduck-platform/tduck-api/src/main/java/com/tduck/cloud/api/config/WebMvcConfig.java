@@ -9,6 +9,7 @@ import com.tduck.cloud.api.web.resolver.LoginUserHandlerMethodArgumentResolver;
 import com.tduck.cloud.storage.cloud.OssStorageConfig;
 import com.tduck.cloud.storage.cloud.OssStorageFactory;
 import com.tduck.cloud.storage.enums.OssTypeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.system.ApplicationHome;
@@ -27,10 +28,11 @@ import java.util.List;
  * @author smalljop
  */
 @Configuration
+@Slf4j
 public class WebMvcConfig implements WebMvcConfigurer {
 
     /**
-     * html静态资源   js静态资源    css静态资源
+     * html静态资源 js静态资源 css静态资源
      */
     private final List<String> staticResources = Lists.newArrayList("/**/*.html",
             "/**/*.js",
@@ -56,18 +58,34 @@ public class WebMvcConfig implements WebMvcConfigurer {
         if (ObjectUtil.isNotNull(config) && OssStorageFactory.getConfig().getOssType() == OssTypeEnum.LOCAL) {
             // 文件上传
             String uploadFolder = config.getUploadFolder();
-            //   未配置路径时 使用jar所在目录作为文件默认存储目录
+            // 未配置路径时 使用jar所在目录作为文件默认存储目录
             if (StrUtil.isBlank(uploadFolder)) {
                 ApplicationHome ah = new ApplicationHome(OssStorageFactory.class);
-                uploadFolder = ah.getDir().getAbsolutePath();
-
+                uploadFolder = ah.getDir().getAbsolutePath() + "/upload";
+                log.info("未配置上传路径，使用默认路径: {}", uploadFolder);
+            } else {
+                log.info("使用配置的上传路径: {}", uploadFolder);
             }
+
+            // 确保目录存在
+            File uploadDir = new File(uploadFolder);
+            if (!uploadDir.exists()) {
+                boolean created = uploadDir.mkdirs();
+                if (created) {
+                    log.info("成功创建上传目录: {}", uploadDir.getAbsolutePath());
+                } else {
+                    log.error("无法创建上传目录: {}", uploadDir.getAbsolutePath());
+                }
+            }
+
             uploadFolder = StringUtils.appendIfMissing(uploadFolder, File.separator);
+            String resourceLocation = "file:" + uploadFolder;
+            log.info("添加资源处理器: pattern={}, location={}", config.getAccessPathPattern(), resourceLocation);
             registry.addResourceHandler(config.getAccessPathPattern())
-                    .addResourceLocations("file:" + uploadFolder);
+                    .addResourceLocations(resourceLocation);
         }
 
-        //这句不要忘了，否则项目默认静态资源映射会失效
+        // 这句不要忘了，否则项目默认静态资源映射会失效
         registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
         // swagger 配置
         registry.addResourceHandler("doc.html").addResourceLocations("classpath:/META-INF/resources/");
@@ -78,7 +96,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        //所有路径都被拦截
+        // 所有路径都被拦截
         registry.addInterceptor(noRepeatSubmitInterceptor).addPathPatterns("/**").excludePathPatterns(staticResources);
         registry.addInterceptor(authorizationInterceptor).addPathPatterns("/**").excludePathPatterns(staticResources);
     }

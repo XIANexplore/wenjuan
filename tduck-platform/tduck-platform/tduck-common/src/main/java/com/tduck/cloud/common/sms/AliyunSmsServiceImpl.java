@@ -8,6 +8,7 @@ import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
 import com.aliyun.teaopenapi.models.Config;
 import com.tduck.cloud.common.util.JsonUtils;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -19,8 +20,8 @@ import java.util.Map;
  **/
 @Data
 @Slf4j
+@EqualsAndHashCode(callSuper = false)
 public class AliyunSmsServiceImpl extends SmsService {
-
 
     private Client client;
 
@@ -40,7 +41,6 @@ public class AliyunSmsServiceImpl extends SmsService {
         }
     }
 
-
     @Override
     public boolean sendSms(String phoneNumber, String templateId, Map<String, Object> templateParams) throws Exception {
         // 1.发送短信
@@ -55,8 +55,5 @@ public class AliyunSmsServiceImpl extends SmsService {
         Assert.isTrue(StrUtil.equals(code, "OK"), sendResp.body.message);
         return StrUtil.equals(code, "OK");
     }
-
-
-
 
 }

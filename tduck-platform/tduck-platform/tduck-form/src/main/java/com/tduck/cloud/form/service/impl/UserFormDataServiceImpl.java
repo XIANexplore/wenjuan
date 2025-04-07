@@ -32,7 +32,7 @@ import com.tduck.cloud.form.util.FormWebHookUtils;
 import com.tduck.cloud.form.vo.FormDataTableVO;
 import com.tduck.cloud.form.vo.FormFieldVO;
 import com.tduck.cloud.storage.cloud.OssStorageFactory;
-import com.tduck.cloud.storage.util.StorageUtils;
+import com.tduck.cloud.form.util.StorageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -58,12 +58,12 @@ import static com.tduck.cloud.webhook.constant.WebhookEventConstants.WEBHOOK_EVE
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserFormDataServiceImpl extends ServiceImpl<UserFormDataMapper, UserFormDataEntity> implements UserFormDataService {
+public class UserFormDataServiceImpl extends ServiceImpl<UserFormDataMapper, UserFormDataEntity>
+        implements UserFormDataService {
 
     private final UserFormItemService userFormItemService;
     private final CacheUtils redisUtils;
     private final FormDataUtils formDataUtils;
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -71,14 +71,14 @@ public class UserFormDataServiceImpl extends ServiceImpl<UserFormDataMapper, Use
         HashMap<String, Object> result = MapUtil.newHashMap();
         String formKey = entity.getFormKey();
         entity.setSubmitAddress(AddressUtils.getRealAddressByIP(entity.getSubmitRequestIp()));
-        entity.setSerialNumber(redisUtils.incr(StrUtil.format(FORM_RESULT_NUMBER, formKey), CommonConstants.ConstantNumber.ONE));
+        entity.setSerialNumber(
+                redisUtils.incr(StrUtil.format(FORM_RESULT_NUMBER, formKey), CommonConstants.ConstantNumber.ONE));
         this.save(entity);
         formDataUtils.syncSaveFormData(entity);
         result.put("id", entity.getId());
         FormWebHookUtils.pushFormDataSaveWebHook(entity, WEBHOOK_EVENT_TYPE_FORM_DATA_ADD);
         return result;
     }
-
 
     /**
      * 下载表单结果中的附件
@@ -89,8 +89,11 @@ public class UserFormDataServiceImpl extends ServiceImpl<UserFormDataMapper, Use
     @Override
     public Result downloadFormResultFile(QueryFormResultRequest request) {
         String uuid = IdUtil.simpleUUID();
-        List<UserFormItemEntity> userFormItemEntityList = userFormItemService.list(Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getFormKey()).in(UserFormItemEntity::getType, CollUtil.newArrayList(FormItemTypeEnum.UPLOAD.toString(), FormItemTypeEnum.IMAGE_UPLOAD.toString())));
-        //结果
+        List<UserFormItemEntity> userFormItemEntityList = userFormItemService.list(
+                Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getFormKey())
+                        .in(UserFormItemEntity::getType, CollUtil.newArrayList(FormItemTypeEnum.UPLOAD.toString(),
+                                FormItemTypeEnum.IMAGE_UPLOAD.toString())));
+        // 结果
         List<Map> rows = null;
         if (ObjectUtil.isNull(request.getCurrent()) && ObjectUtil.isNull(request.getSize())) {
             rows = formDataUtils.searchAll(request);
@@ -110,7 +113,9 @@ public class UserFormDataServiceImpl extends ServiceImpl<UserFormDataMapper, Use
                 finalRows.forEach(result -> {
                     int index = 0;
                     userFormItemEntityList.forEach(item -> {
-                        List<UploadResultStruct> uploadResults = JsonUtils.jsonToList(JsonUtils.objToJson(MapUtil.get(result, item.getFormItemId(), List.class)), UploadResultStruct.class);
+                        List<UploadResultStruct> uploadResults = JsonUtils.jsonToList(
+                                JsonUtils.objToJson(MapUtil.get(result, item.getFormItemId(), List.class)),
+                                UploadResultStruct.class);
                         if (CollectionUtil.isNotEmpty(uploadResults)) {
                             uploadResults.forEach(uFile -> {
                                 if (StrUtil.isNotBlank(uFile.getUrl())) {
@@ -125,8 +130,9 @@ public class UserFormDataServiceImpl extends ServiceImpl<UserFormDataMapper, Use
                 });
                 // 压缩上传oss
                 ByteArrayOutputStream zipOutputStream = new ByteArrayOutputStream();
-                ZipUtil.zip(zipOutputStream, paths.toArray(new String[]{}), ins.toArray(new InputStream[]{}));
-                String downloadUrl = OssStorageFactory.getStorageService().upload(zipOutputStream.toByteArray(), StorageUtils.generateFileName("download", ".zip"));
+                ZipUtil.zip(zipOutputStream, paths.toArray(new String[] {}), ins.toArray(new InputStream[] {}));
+                String downloadUrl = OssStorageFactory.getStorageService().upload(zipOutputStream.toByteArray(),
+                        StorageUtils.generateFileName("download", ".zip"));
                 AsyncProcessUtils.setProcess(uuid, downloadUrl);
                 log.info("export file cost time: {}", timer.interval());
             } catch (Exception e) {
@@ -136,12 +142,10 @@ public class UserFormDataServiceImpl extends ServiceImpl<UserFormDataMapper, Use
         return Result.success(uuid);
     }
 
-
     @Override
     public FormDataTableVO listFormDataTable(QueryFormResultRequest request) {
         return formDataUtils.search(request);
     }
-
 
     @Override
     public Boolean deleteByIds(List<String> dataIdList, String formKey) {

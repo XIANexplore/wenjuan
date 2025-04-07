@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.tduck.cloud.common.entity.BaseEntity;
 import lombok.Data;
-
+import lombok.EqualsAndHashCode;
 
 /**
  * 微信公众号用户 (WxMpUser)表实体类
@@ -14,6 +14,7 @@ import lombok.Data;
  */
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @TableName(value = "wx_mp_user", autoResultMap = true)
 public class WxMpUserEntity extends BaseEntity<WxMpUserEntity> {
     /**
@@ -60,6 +61,5 @@ public class WxMpUserEntity extends BaseEntity<WxMpUserEntity> {
      * 账号Id
      */
     private Long userId;
-
 
 }

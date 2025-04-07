@@ -2,6 +2,7 @@ package com.tduck.cloud.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldNameConstants;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.util.Map;
  */
 @Data
 @FieldNameConstants
+@EqualsAndHashCode(callSuper = false)
 public class SysBaseEntity extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -33,7 +35,6 @@ public class SysBaseEntity extends BaseEntity implements Serializable {
      * 更新者
      */
     private String updateBy;
-
 
     /**
      * 请求参数

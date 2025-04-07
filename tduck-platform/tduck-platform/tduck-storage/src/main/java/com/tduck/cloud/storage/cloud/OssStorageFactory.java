@@ -1,6 +1,5 @@
 package com.tduck.cloud.storage.cloud;
 
-
 import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -19,8 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Objects;
+import java.io.File;
 
+import java.util.Objects;
 
 /**
  * 文件上传Factory
@@ -36,14 +36,14 @@ public final class OssStorageFactory {
 
     public static final int DEFAULT_FILE_NAME_LENGTH = 100;
 
-
     static {
         build();
     }
 
     public static synchronized void build() {
         try {
-            OssStorageConfig config = JsonUtils.jsonToObj(SpringContextUtils.getBean(SysEnvConfigService.class).getValueByKey(ConfigConstants.FILE_ENV_CONFIG), OssStorageConfig.class);
+            OssStorageConfig config = JsonUtils.jsonToObj(SpringContextUtils.getBean(SysEnvConfigService.class)
+                    .getValueByKey(ConfigConstants.FILE_ENV_CONFIG), OssStorageConfig.class);
             if (ObjectUtil.isNull(config)) {
                 return;
             }
@@ -60,11 +60,32 @@ public final class OssStorageFactory {
                 // 本地存储默认配置
                 if (StrUtil.isBlank(config.getUploadFolder())) {
                     ApplicationHome ah = new ApplicationHome(OssStorageFactory.class);
-                    config.setUploadFolder(ah.getDir().getAbsolutePath() + "/upload");
+                    String uploadPath = ah.getDir().getAbsolutePath() + "/upload";
+                    config.setUploadFolder(uploadPath);
+                    log.info("设置默认上传路径: {}", uploadPath);
+                } else {
+                    log.info("使用配置的上传路径: {}", config.getUploadFolder());
                 }
+
+                // 确保上传目录存在
+                File uploadDir = new File(config.getUploadFolder());
+                if (!uploadDir.exists()) {
+                    try {
+                        boolean created = uploadDir.mkdirs();
+                        if (created) {
+                            log.info("成功创建上传目录: {}", uploadDir.getAbsolutePath());
+                        } else {
+                            log.error("无法创建上传目录: {}", uploadDir.getAbsolutePath());
+                        }
+                    } catch (Exception e) {
+                        log.error("创建上传目录异常: {}", e.getMessage(), e);
+                    }
+                }
+
                 if (StrUtil.isBlank(config.getDomain())) {
                     String domain = ServletUtils.getDomain(ServletUtils.getRequest());
                     config.setDomain(domain + "/u");
+                    log.info("设置默认域名: {}", config.getDomain());
                 }
                 storageService = new LocalStorageService(config);
             }
@@ -80,7 +101,6 @@ public final class OssStorageFactory {
         }
         return storageService;
     }
-
 
     /**
      * 校验文件格式是否正常
