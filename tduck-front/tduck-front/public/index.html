@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+        /* Global styles to ensure avatar stays on top */
+        .vue-image-crop-upload,
+        .vicp-wrap,
+        .avatar-uploader,
+        .profile-right,
+        .avatar-container,
+        .avatar-inner,
+        .profile-avatar,
+        .avatar-overlay {
+            z-index: 10001 !important;
+            position: relative;
+        }
+    </style>
     <% for (var i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.css) { %>
         <!-- 使用CDN的CSS文件 -->
         <link href="<%= htmlWebpackPlugin.options.cdn.css[i] %>" rel="external nofollow preload" as="style">

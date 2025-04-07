@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <div class="header-container">
-      <div>
+      <div class="logo-container">
         <img class="header-logo-img" src="~@/assets/images/custom-logo.svg" @click="$router.push({ path: '/' })" />
       </div>
       <div class="right-header">
@@ -26,7 +26,9 @@
             </div>
           </div>
           <div slot="reference">
-            <img v-if="getUserInfo" :src="getUserInfo.avatar" class="user-avatar" />
+            <div class="avatar-wrapper">
+              <img v-if="getUserInfo" :src="getUserInfo.avatar" class="user-avatar" />
+            </div>
           </div>
         </el-popover>
       </div>
@@ -233,15 +235,25 @@ $menuActiveText: #409eff;
   min-width: 1024px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 
+  .logo-container {
+    position: relative;
+    z-index: 9999;
+  }
+
   .header-logo-img {
     width: 120px;
     float: left;
     margin-top: 5px;
     margin-left: 55px;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+    position: fixed;
+    z-index: 9999;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
+    pointer-events: auto;
 
     &:hover {
       transform: scale(1.05);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
     }
   }
 
@@ -254,12 +266,30 @@ $menuActiveText: #409eff;
     }
   }
 
+  .avatar-wrapper {
+    position: relative;
+    display: inline-block;
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(45deg, #409eff, #67c23a);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.08);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+  }
+
   .user-avatar {
     width: 35px;
     height: 35px;
-    border-radius: 100px;
+    border-radius: 50%;
     cursor: pointer;
     vertical-align: middle;
+    object-fit: cover;
+    border: 2px solid white;
+    transition: all 0.3s ease;
   }
 }
 

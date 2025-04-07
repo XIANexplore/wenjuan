@@ -50,23 +50,35 @@ public class WxMpConfiguration {
     private final WxMpProperties properties;
     private final SysEnvConfigService sysEnvConfigService;
 
-
     @Bean
     @ConditionalOnBean(SysEnvConfigService.class)
     public WxMpService wxMpService() {
         String mpConfigJson = sysEnvConfigService.getValueByKey(ConfigConstants.WX_MP_ENV_CONFIG);
         WxMpService service = new WxMpServiceImpl();
         if (StrUtil.isBlank(mpConfigJson)) {
+            // Log the missing configuration
+            System.out.println("WeChat MP configuration is missing. Please configure it in the system settings.");
             return service;
         }
         WxMpProperties.MpConfig configs = JsonUtils.jsonToObj(mpConfigJson, WxMpProperties.MpConfig.class);
         if (ObjectUtil.isNull(configs)) {
+            System.out.println("Failed to parse WeChat MP configuration. Please check the configuration format.");
             return service;
         }
-        setWxMpConfig(service, configs);
+
+        // Check if appId and secret are provided
+        if (StrUtil.isBlank(configs.getAppId()) || StrUtil.isBlank(configs.getSecret())) {
+            System.out.println("WeChat MP appId or secret is missing. Please provide both in the configuration.");
+            return service;
+        }
+
+        try {
+            setWxMpConfig(service, configs);
+        } catch (Exception e) {
+            System.out.println("Failed to set WeChat MP configuration: " + e.getMessage());
+        }
         return service;
     }
-
 
     /**
      * 设置微信公众号配置信息
@@ -75,16 +87,48 @@ public class WxMpConfiguration {
      * @param configs     微信公众号配置信息
      */
     public static void setWxMpConfig(WxMpService wxMpService, WxMpProperties.MpConfig configs) {
-        wxMpService.setMultiConfigStorages(CollUtil.newArrayList(configs).stream().map(a -> {
-            WxMpDefaultConfigImpl wxMpRedisConfig = new WxMpDefaultConfigImpl();
-            wxMpRedisConfig.setAppId(a.getAppId());
-            wxMpRedisConfig.setSecret(a.getSecret());
-            wxMpRedisConfig.setToken(a.getToken());
-            wxMpRedisConfig.setAesKey(a.getAesKey());
-            return wxMpRedisConfig;
-        }).collect(Collectors.toMap(WxMpDefaultConfigImpl::getAppId, a -> a, (o, n) -> o)));
-    }
+        try {
+            if (configs == null) {
+                System.out.println("WeChat MP configuration is null");
+                return;
+            }
 
+            if (StrUtil.isBlank(configs.getAppId())) {
+                System.out.println("WeChat MP appId is missing");
+                return;
+            }
+
+            if (StrUtil.isBlank(configs.getSecret())) {
+                System.out.println("WeChat MP secret is missing");
+                return;
+            }
+
+            WxMpDefaultConfigImpl wxMpRedisConfig = new WxMpDefaultConfigImpl();
+            wxMpRedisConfig.setAppId(configs.getAppId());
+            wxMpRedisConfig.setSecret(configs.getSecret());
+            wxMpRedisConfig.setToken(configs.getToken());
+            wxMpRedisConfig.setAesKey(configs.getAesKey());
+
+            wxMpService.setMultiConfigStorages(CollUtil.newArrayList(configs).stream().map(a -> {
+                WxMpDefaultConfigImpl config = new WxMpDefaultConfigImpl();
+                config.setAppId(a.getAppId());
+                config.setSecret(a.getSecret());
+                config.setToken(a.getToken());
+                config.setAesKey(a.getAesKey());
+                return config;
+            }).collect(Collectors.toMap(WxMpDefaultConfigImpl::getAppId, a -> a, (o, n) -> o)));
+
+            // Verify the configuration was set correctly
+            if (wxMpService.getWxMpConfigStorage() == null) {
+                System.out.println("Failed to set WeChat MP configuration. WxMpConfigStorage is null.");
+            } else {
+                System.out.println("WeChat MP configuration set successfully for appId: " + configs.getAppId());
+            }
+        } catch (Exception e) {
+            System.out.println("Error setting WeChat MP configuration: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     @Bean
     public WxMpMessageRouter messageRouter(WxMpService wxMpService) {
@@ -99,7 +143,8 @@ public class WxMpConfiguration {
         newRouter.rule().async(false).msgType(EVENT).event(KF_SWITCH_SESSION).handler(this.kfSessionHandler).end();
 
         // 门店审核事件
-        newRouter.rule().async(false).msgType(EVENT).event(POI_CHECK_NOTIFY).handler(this.storeCheckNotifyHandler).end();
+        newRouter.rule().async(false).msgType(EVENT).event(POI_CHECK_NOTIFY).handler(this.storeCheckNotifyHandler)
+                .end();
 
         // 自定义菜单事件
         newRouter.rule().async(false).msgType(EVENT).event(EventType.CLICK).handler(this.menuHandler).end();

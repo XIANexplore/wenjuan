@@ -49,7 +49,6 @@ public class UserFormSettingController {
     private final CacheUtils cacheUtils;
     private final WxMpService wxMpService;
 
-
     /**
      * 保存表单设置
      */
@@ -74,7 +73,6 @@ public class UserFormSettingController {
         return Result.success(settings);
     }
 
-
     /**
      * 当前填写设置的状态
      *
@@ -84,34 +82,43 @@ public class UserFormSettingController {
      */
     @GetMapping("/user/form/setting-status")
     @PermitAll
-    public Result<Boolean> querySettingStatus(@RequestParam String formKey, @RequestParam(required = false) String wxOpenId, @RequestParam(required = false) Integer type, HttpServletRequest request) {
-        return userFormSettingService.getUserFormWriteSettingStatus(formKey, HttpUtils.getIpAddr(request), wxOpenId, type);
+    public Result<Boolean> querySettingStatus(@RequestParam String formKey,
+            @RequestParam(required = false) String wxOpenId, @RequestParam(required = false) Integer type,
+            HttpServletRequest request) {
+        return userFormSettingService.getUserFormWriteSettingStatus(formKey, HttpUtils.getIpAddr(request), wxOpenId,
+                type);
     }
-
 
     /**
      * 填写微信通知二维码
      */
     @GetMapping("/user/form/wx/notify-qrcode")
-    public Result<String> getWxNotifyQrCode(@RequestParam("key") String formKey) throws WxErrorException {
+    public Result<String> getWxNotifyQrCode(@RequestParam("key") String formKey) {
         try {
-            String loginSceneStr = JsonUtils.objToJson(new WxMpQrCodeGenRequest(WxMpQrCodeGenRequest.QrCodeType.SUB_NOTIFY, formKey));
-            //5分钟有效
+            // Check if wxMpService is properly configured
+            if (wxMpService == null || wxMpService.getWxMpConfigStorage() == null) {
+                log.error("微信公众号配置不存在，无法生成通知二维码");
+                return Result.failed("微信公众号未配置");
+            }
+
+            String loginSceneStr = JsonUtils
+                    .objToJson(new WxMpQrCodeGenRequest(WxMpQrCodeGenRequest.QrCodeType.SUB_NOTIFY, formKey));
+            // 5分钟有效
             WxMpQrCodeTicket ticket = wxMpService.getQrcodeService().qrCodeCreateTmpTicket(loginSceneStr, 10 * 60);
             String subNotifyQrcodeUrl = wxMpService.getQrcodeService().qrCodePictureUrl(ticket.getTicket());
             return Result.success(subNotifyQrcodeUrl);
         } catch (Exception e) {
             log.error("获取微信通知二维码失败", e);
-            return Result.success("获取微信通知二维码失败");
+            return Result.failed("获取微信通知二维码失败");
         }
     }
-
 
     /**
      * 填写微信通知二维码
      */
     @PostMapping("/user/form/wx/delete/notify-user")
-    public Result<Boolean> deleteWxNotifyQrCode(@RequestParam("key") String key, @RequestParam("openId") String openId) {
+    public Result<Boolean> deleteWxNotifyQrCode(@RequestParam("key") String key,
+            @RequestParam("openId") String openId) {
         cacheUtils.removeList(StrUtil.format(WxMpRedisKeyConstants.WX_MP_SUB_NOTIFY, key), openId);
         return Result.success(true);
     }
@@ -120,17 +127,20 @@ public class UserFormSettingController {
      * 获取表单微信通知用户
      */
     @GetMapping("/user/form/wx/notify-user")
-    public Result<List<WxMpUserVO>> getWxNotifyUser(@RequestParam("key") String formKey, @RequestParam(required = false) String openIdStr) {
+    public Result<List<WxMpUserVO>> getWxNotifyUser(@RequestParam("key") String formKey,
+            @RequestParam(required = false) String openIdStr) {
         Set<Object> subNotifyUsers = null;
         if (StrUtil.isNotBlank(openIdStr)) {
             subNotifyUsers = Sets.newHashSet(StrUtil.splitTrim(openIdStr, ";"));
         } else {
-            List coll = cacheUtils.getList(StrUtil.format(WxMpRedisKeyConstants.WX_MP_SUB_NOTIFY, formKey), String.class);
+            List coll = cacheUtils.getList(StrUtil.format(WxMpRedisKeyConstants.WX_MP_SUB_NOTIFY, formKey),
+                    String.class);
             subNotifyUsers = Collections.singleton(coll.stream().collect(Collectors.toSet()));
         }
-        return Result.success(wxMpUserService.listWxMpUserByOpenId(subNotifyUsers).stream().map(item -> new WxMpUserVO(item.getNickname(), item.getHeadImgUrl(), item.getOpenId())).collect(Collectors.toList()));
+        return Result.success(wxMpUserService.listWxMpUserByOpenId(subNotifyUsers).stream()
+                .map(item -> new WxMpUserVO(item.getNickname(), item.getHeadImgUrl(), item.getOpenId()))
+                .collect(Collectors.toList()));
     }
-
 
     /**
      * 公开接口
@@ -156,6 +166,5 @@ public class UserFormSettingController {
         }
         return Result.failed("密码输入错误");
     }
-
 
 }

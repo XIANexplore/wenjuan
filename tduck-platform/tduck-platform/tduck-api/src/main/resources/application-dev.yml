@@ -15,8 +15,8 @@ spring:
       connection-test-query: SELECT 1 FROM DUAL
   mail:
     host: smtp.88.com
-    username: XINRAN88aiyou@88.com # 邮箱账号
-    password: 8g3kwEx2e3fxKJJc #邮箱授权码
+    username: # 邮箱账号
+    password:  #邮箱授权码
 
 logging:
   level:

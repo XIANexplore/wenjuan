@@ -1,219 +1,229 @@
 <template>
-  <div class="member-container">
-    <el-card class="member-box-card">
-      <div class="member-info-view">
+  <div class="profile-container">
+    <el-card class="profile-card">
+      <div class="profile-header">
         <h2 class="profile-title">个人信息</h2>
-        <div v-if="userInfo" class="profile-content">
-          <div class="profile-left">
-            <div class="profile-item">
-              <div class="profile-label">昵称</div>
-              <div class="profile-value">
-                <span>{{ userInfo.name }}</span>
-                <el-button type="primary" size="small" round class="edit-btn" @click="editNameDialogVisible = true"
-                  >修改</el-button
-                >
-              </div>
-            </div>
-            <div class="profile-item">
-              <div class="profile-label">账号</div>
-              <div class="profile-value">
-                <span>{{ userInfo.email }}</span>
-                <el-button type="primary" size="small" round class="edit-btn" @click="emailDialogVisible = true"
-                  >绑定</el-button
-                >
-              </div>
-            </div>
-            <div class="profile-item">
-              <div class="profile-label">密码</div>
-              <div class="profile-value">
-                <span>******</span>
-                <el-button type="primary" size="small" round class="edit-btn" @click="pwdDialogVisible = true"
-                  >修改</el-button
-                >
-              </div>
-            </div>
-            <div class="profile-item">
-              <div class="profile-label">手机号</div>
-              <div class="profile-value">
-                <span>{{ userInfo.phoneNumber || '未绑定' }}</span>
-                <el-button
-                  v-if="userInfo.phoneNumber"
-                  type="primary"
-                  size="small"
-                  round
-                  class="edit-btn"
-                  @click="phoneDialogVisible = true"
-                  >修改</el-button
-                >
-                <el-button v-else type="primary" size="small" round class="edit-btn" @click="phoneDialogVisible = true"
-                  >绑定</el-button
-                >
-              </div>
+      </div>
+
+      <div v-if="userInfo" class="profile-content">
+        <!-- Avatar section -->
+        <div class="profile-avatar-section">
+          <div class="avatar-container" @click="openAvatarUpload">
+            <el-avatar class="profile-avatar" :size="120" :src="userInfo.avatar" />
+            <div class="avatar-overlay">
+              <i class="el-icon-camera"></i>
+              <span>更换头像</span>
             </div>
           </div>
-          <div class="profile-right">
-            <div class="avatar-container">
-              <my-upload
-                v-model="showUploadAvatar"
-                field="file"
-                :width="300"
-                :height="300"
-                :url="getUploadUrl()"
-                :headers="getUploadHeader()"
-                img-format="png"
-                @crop-upload-success="cropUploadSuccess"
-              />
-              <el-avatar class="profile-avatar" :src="userInfo.avatar" @click.native="showUploadAvatar = true" />
-              <div class="avatar-overlay" @click="showUploadAvatar = true">
-                <i class="el-icon-camera"></i>
-                <span>更换头像</span>
-              </div>
-            </div>
-          </div>
+          <div class="profile-username">{{ userInfo.name }}</div>
         </div>
-        <h2 class="profile-title">第三方账号</h2>
-        <div v-if="userInfo" class="third-party-accounts">
-          <div class="third-party-item">
-            <div class="third-party-icon">
-              <font-icon class="fab fa-weixin" :class="{ connected: userInfo.wxName }" />
-            </div>
-            <div class="third-party-info">
-              <div class="third-party-name">微信</div>
-              <div class="third-party-status">
-                <span v-if="userInfo.wxName" class="connected-text"
-                  >{{ userInfo.wxName }} <i class="el-icon-check"></i
-                ></span>
-                <span v-else class="not-connected-text">未绑定</span>
-              </div>
-            </div>
-            <div class="third-party-action">
-              <el-button v-if="userInfo.wxName" type="info" size="small" round disabled>已绑定</el-button>
-              <el-button v-else type="success" size="small" round @click="bindWxHandle">绑定</el-button>
-            </div>
-            <el-dialog title="微信扫描二维码绑定" width="400px" center :visible.sync="bindWxDialogVisible">
-              <div class="qrcode-container">
-                <el-image class="qrcode-image" :src="bindWxQrcode" fit="fill" />
-                <p class="qrcode-tip">请使用微信扫描二维码完成绑定</p>
-              </div>
-            </el-dialog>
+
+        <!-- Info section -->
+        <div class="profile-info-section">
+          <div class="info-row">
+            <div class="info-label">昵称</div>
+            <div class="info-value">{{ userInfo.name }}</div>
+            <el-button type="primary" size="small" class="action-btn" @click="editNameDialogVisible = true"
+              >修改</el-button
+            >
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">账号</div>
+            <div class="info-value">{{ userInfo.email }}</div>
+            <el-button type="primary" size="small" class="action-btn" @click="emailDialogVisible = true"
+              >绑定</el-button
+            >
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">密码</div>
+            <div class="info-value">******</div>
+            <el-button type="primary" size="small" class="action-btn" @click="pwdDialogVisible = true">修改</el-button>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">手机号</div>
+            <div class="info-value">{{ userInfo.phoneNumber || '未绑定' }}</div>
+            <el-button type="primary" size="small" class="action-btn" @click="phoneDialogVisible = true">
+              {{ userInfo.phoneNumber ? '修改' : '绑定' }}
+            </el-button>
           </div>
         </div>
       </div>
     </el-card>
-    <div>
-      <el-dialog title="修改用户名" :visible.sync="editNameDialogVisible" width="450px" center>
-        <el-form ref="updateNameForm" :model="userInfoForm" :rules="userInfoRules" label-width="80px">
-          <el-form-item label="新用户名" prop="name">
-            <el-input v-model="userInfoForm.name" />
-          </el-form-item>
-        </el-form>
-        <span slot="footer">
-          <el-button
-            type="primary"
-            @click="
-              () => {
-                this.$refs['updateNameForm'].validateField('name', (err) => {
-                  if (!err) {
-                    this.editNameDialogVisible = false
-                    this.updateUserHandle()
-                  }
-                })
-              }
-            "
-            >保存</el-button
-          >
-        </span>
-      </el-dialog>
-      <el-dialog title="修改密码" :visible.sync="pwdDialogVisible" width="450px" center>
-        <el-form
-          ref="updatePassWordForm"
-          style="width: 300px"
-          :model="userPwdForm"
-          :rules="userPwdRules"
-          label-width="120px"
+
+    <!-- Dialogs -->
+    <el-dialog
+      title="修改用户名"
+      :visible.sync="editNameDialogVisible"
+      width="400px"
+      center
+      custom-class="custom-dialog"
+    >
+      <el-form ref="updateNameForm" :model="userInfoForm" :rules="userInfoRules" label-width="80px">
+        <el-form-item label="新用户名" prop="name">
+          <el-input v-model="userInfoForm.name" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="editNameDialogVisible = false">取消</el-button>
+        <el-button
+          type="primary"
+          @click="
+            () => {
+              this.$refs['updateNameForm'].validateField('name', (err) => {
+                if (!err) {
+                  this.editNameDialogVisible = false
+                  this.updateUserHandle()
+                }
+              })
+            }
+          "
+          >保存</el-button
         >
-          <el-form-item label="输入旧密码" prop="oldPassword">
-            <el-input v-model="userPwdForm.oldPassword" placeholder="请输入旧密码" show-password />
-          </el-form-item>
-          <el-form-item label="输入新密码" prop="password">
-            <el-input v-model="userPwdForm.password" placeholder="请输入新密码" show-password />
-          </el-form-item>
-          <el-form-item label="重复输入密码" prop="repeatPassword">
-            <el-input v-model="userPwdForm.repeatPassword" placeholder="请重复输入密码" show-password />
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button
-            type="primary"
-            @click="
-              () => {
-                this.pwdDialogVisible = false
-                this.updateUserPwdHandle()
-              }
-            "
-            >完 成</el-button
-          >
-        </span>
-      </el-dialog>
-      <el-dialog title="修改邮箱" :visible.sync="emailDialogVisible" width="450px" center>
-        <el-form
-          ref="updateEmailForm"
-          style="width: 80%"
-          :model="userInfoForm"
-          :rules="userInfoRules"
-          label-width="80px"
+      </span>
+    </el-dialog>
+
+    <el-dialog title="修改密码" :visible.sync="pwdDialogVisible" width="400px" center custom-class="custom-dialog">
+      <el-form ref="updatePassWordForm" :model="userPwdForm" :rules="userPwdRules" label-width="100px">
+        <el-form-item label="旧密码" prop="oldPassword">
+          <el-input v-model="userPwdForm.oldPassword" placeholder="请输入旧密码" show-password />
+        </el-form-item>
+        <el-form-item label="新密码" prop="password">
+          <el-input v-model="userPwdForm.password" placeholder="请输入新密码" show-password />
+        </el-form-item>
+        <el-form-item label="确认密码" prop="repeatPassword">
+          <el-input v-model="userPwdForm.repeatPassword" placeholder="请重复输入密码" show-password />
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="pwdDialogVisible = false">取消</el-button>
+        <el-button
+          type="primary"
+          @click="
+            () => {
+              this.$refs['updatePassWordForm'].validate((valid) => {
+                if (valid) {
+                  this.pwdDialogVisible = false
+                  this.updateUserPwdHandle()
+                }
+              })
+            }
+          "
+          >确定</el-button
         >
-          <el-form-item label="邮箱" prop="email">
-            <el-input v-model="userInfoForm.email" placeholder="请输入邮箱" />
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button
-            v-prevent-re-click
-            type="primary"
-            @click="
-              () => {
-                this.pwdDialogVisible = false
-                this.sendUpdateEmail()
-              }
-            "
-            >发送验证邮件</el-button
-          >
-        </span>
-      </el-dialog>
-      <el-dialog title="修改手机号" :visible.sync="phoneDialogVisible" width="450px" center>
-        <el-form ref="updatePhoneForm" :model="userInfoForm" :rules="userInfoRules" label-width="120px">
-          <el-form-item label="手机号" prop="phoneNumber">
-            <el-input v-model="userInfoForm.phoneNumber" placeholder="请输入手机号" />
-          </el-form-item>
-          <el-form-item label="输入验证码" prop="code">
-            <el-input
-              v-model="userInfoForm.code"
-              placeholder="请输入验证码"
-              style="display: inline-block; width: 60%"
-            />
-            <el-button
-              v-prevent-re-click
-              style="display: inline-block; width: 40%"
-              @click.native="sendUpdatePhoneNumber"
-            >
+      </span>
+    </el-dialog>
+
+    <el-dialog title="修改邮箱" :visible.sync="emailDialogVisible" width="400px" center custom-class="custom-dialog">
+      <el-form ref="updateEmailForm" :model="userInfoForm" :rules="userInfoRules" label-width="80px">
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="userInfoForm.email" placeholder="请输入邮箱" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="emailDialogVisible = false">取消</el-button>
+        <el-button
+          v-prevent-re-click
+          type="primary"
+          @click="
+            () => {
+              this.$refs['updateEmailForm'].validateField('email', (err) => {
+                if (!err) {
+                  this.emailDialogVisible = false
+                  this.sendUpdateEmail()
+                }
+              })
+            }
+          "
+          >发送验证邮件</el-button
+        >
+      </span>
+    </el-dialog>
+
+    <el-dialog title="修改手机号" :visible.sync="phoneDialogVisible" width="400px" center custom-class="custom-dialog">
+      <el-form ref="updatePhoneForm" :model="userInfoForm" :rules="userInfoRules" label-width="100px">
+        <el-form-item label="手机号" prop="phoneNumber">
+          <el-input v-model="userInfoForm.phoneNumber" placeholder="请输入手机号" />
+        </el-form-item>
+        <el-form-item label="验证码" prop="code">
+          <div class="verification-code-input">
+            <el-input v-model="userInfoForm.code" placeholder="请输入验证码" />
+            <el-button v-prevent-re-click @click="sendUpdatePhoneNumber">
               {{ phoneValidateCodeBtnText }}
             </el-button>
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button
-            type="primary"
-            @click="
-              () => {
-                this.phoneDialogVisible = false
-                this.updateUserPhoneHandle()
+          </div>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="phoneDialogVisible = false">取消</el-button>
+        <el-button
+          type="primary"
+          @click="
+            () => {
+              this.$refs['updatePhoneForm'].validateField(['phoneNumber', 'code'], (err) => {
+                if (!err) {
+                  this.phoneDialogVisible = false
+                  this.updateUserPhoneHandle()
+                }
+              })
+            }
+          "
+          >确定</el-button
+        >
+      </span>
+    </el-dialog>
+
+    <!-- Avatar Upload Modal -->
+    <div v-if="showUploadAvatar" class="avatar-upload-modal" @click.self="closeAvatarUpload">
+      <div class="avatar-modal-content">
+        <div class="avatar-modal-header">
+          <h3>更换头像</h3>
+          <button class="close-button" @click="closeAvatarUpload">
+            <i class="el-icon-close"></i>
+          </button>
+        </div>
+
+        <div class="avatar-modal-body">
+          <div class="current-avatar">
+            <el-avatar :size="100" :src="userInfo.avatar" />
+          </div>
+
+          <my-upload
+            v-model="showUploadCropper"
+            field="file"
+            :width="300"
+            :height="300"
+            :url="getUploadUrl()"
+            :headers="getUploadHeader()"
+            img-format="png"
+            @crop-upload-success="cropUploadSuccess"
+            :params="{ type: 'avatar' }"
+            :size="2048"
+            :imgMove="true"
+            :full="false"
+            :language="{
+              hint: '点击或拖拽图片到此区域',
+              loading: '正在上传...',
+              noSupported: '浏览器不支持该操作',
+              success: '上传成功',
+              fail: '上传失败',
+              preview: '预览',
+              btn: {
+                off: '取消',
+                back: '上一步',
+                save: '确定'
               }
-            "
-            >完 成</el-button
-          >
-        </span>
-      </el-dialog>
+            }"
+          />
+        </div>
+
+        <div class="avatar-modal-footer">
+          <el-button @click="closeAvatarUpload">取消</el-button>
+          <el-button type="primary" @click="closeAvatarUpload">确定</el-button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -222,10 +232,9 @@
 import myUpload from 'vue-image-crop-upload'
 import constants from '@/utils/constants'
 import FontIcon from '@/components/FontIcon'
-import { getCurrentDomain } from '@/utils'
 
 export default {
-  name: 'Member',
+  name: 'MemberView',
   components: {
     FontIcon,
     myUpload
@@ -234,14 +243,13 @@ export default {
     let validateRePass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (value !== this.userPwdForm.repeatPassword) {
+      } else if (value !== this.userPwdForm.password) {
         callback(new Error('两次输入密码不一致!'))
       } else {
         callback()
       }
     }
     return {
-      memberMenuActive: '1',
       phoneValidateCodeBtnText: '发送验证码',
       userInfoRules: {
         name: [{ required: true, trigger: 'blur', message: '请输入昵称' }],
@@ -278,38 +286,31 @@ export default {
         ],
         repeatPassword: [{ required: true, trigger: 'blur', validator: validateRePass }]
       },
-      bindWxDialogVisible: false,
-      bindWxQrcode: '',
       editNameDialogVisible: false,
       pwdDialogVisible: false,
       phoneDialogVisible: false,
       emailDialogVisible: false,
       userInfo: {},
       userInfoForm: {},
-      qqLoginAuthorizeUrl: '',
       userPwdForm: {
         oldPassword: '',
         password: '',
         repeatPassword: ''
       },
       showUploadAvatar: false,
-      bindWxTimer: null
+      showUploadCropper: false
     }
   },
   created() {
     this.queryUserInfo()
-    this.getQQLoginAuthorizeUrl()
-    this.getBindWxQrCode()
-  },
-  destroyed() {
-    clearInterval(this.bindWxTimer)
   },
   methods: {
     queryUserInfo() {
       this.$api.get('/user/current/detail').then((res) => {
         if (res.data) {
           this.userInfo = res.data
-          this.$store.dispatch('user/update', this.userInfo).then(() => {})
+          this.userInfoForm = { ...res.data }
+          this.$store.dispatch('user/update', this.userInfo)
         }
       })
     },
@@ -321,34 +322,27 @@ export default {
     getUploadUrl() {
       return `${process.env.VUE_APP_API_ROOT}/user/file/upload`
     },
-    getBindWxQrCode() {
-      this.$api.get('/user/bind/wx/qrcode').then((res) => {
-        this.bindWxQrcode = res.data
-      })
-    },
     updateUserPwdHandle() {
       this.$refs['updatePassWordForm'].validate((valid) => {
         if (valid) {
           this.$api.post('/user/update/password', this.userPwdForm).then((res) => {
             if (res.data) {
               this.msgSuccess('修改成功')
+              this.userPwdForm = {
+                oldPassword: '',
+                password: '',
+                repeatPassword: ''
+              }
               this.queryUserInfo()
             }
           })
-        } else {
-          return false
         }
       })
     },
     sendUpdateEmail() {
-      this.$refs['updateEmailForm'].validateField('email', (err) => {
-        if (!err) {
-          this.$api.get('/user/update-email/msg', { params: { email: this.userInfoForm.email } }).then((res) => {
-            if (res.data) {
-              this.msgSuccess('发送成功,请去您的邮箱查看')
-              this.emailDialogVisible = false
-            }
-          })
+      this.$api.get('/user/update-email/msg', { params: { email: this.userInfoForm.email } }).then((res) => {
+        if (res.data) {
+          this.msgSuccess('发送成功,请去您的邮箱查看')
         }
       })
     },
@@ -371,91 +365,95 @@ export default {
       })
     },
     updateUserHandle() {
-      this.$api.post('/user/update', this.userInfoForm).then((res) => {
-        if (res.data) {
-          this.msgSuccess('保存成功')
-          this.queryUserInfo()
-        }
-      })
-    },
-    // qq登录授权地址
-    getQQLoginAuthorizeUrl() {
-      let reUrl = getCurrentDomain() + '/redirect/bindqq'
-      this.$api.get('/login/qq/authorize/url', { params: { redirectUri: reUrl } }).then((res) => {
-        this.qqLoginAuthorizeUrl = res.data
-      })
-    },
-    redirectUrl(url) {
-      window.open(url)
-    },
-    updateUserPhoneHandle() {
-      this.$refs['updatePhoneForm'].validateField(['phoneNumber', 'code'], (err) => {
-        if (!err) {
-          this.$api.post('/user/update/phone-number', this.userInfoForm).then(() => {
-            this.msgSuccess('修改成功')
-            this.queryUserInfo()
-          })
-        }
-      })
-    },
-    bindWxHandle() {
-      this.bindWxDialogVisible = true
-      this.bindWxTimer = setInterval(() => {
-        this.$api.get('/user/current/detail').then((res) => {
+      this.$api
+        .post('/user/update', this.userInfoForm)
+        .then((res) => {
           if (res.data) {
-            let { wxName } = res.data
-            if (wxName) {
-              this.msgSuccess('绑定成功')
-              clearInterval(this.bindWxTimer)
-              this.userInfo.wxName = wxName
-              this.bindWxDialogVisible = false
+            if (!this.userInfoForm.avatar) {
+              this.msgSuccess('保存成功')
             }
+            this.queryUserInfo()
           }
         })
-      }, 5 * 1000)
+        .catch((err) => {
+          console.error('Update failed:', err)
+          this.$message.error('更新失败，请重试')
+        })
+    },
+    updateUserPhoneHandle() {
+      this.$api.post('/user/update/phone-number', this.userInfoForm).then(() => {
+        this.msgSuccess('修改成功')
+        this.queryUserInfo()
+      })
+    },
+    openAvatarUpload() {
+      this.showUploadAvatar = true
+      setTimeout(() => {
+        this.showUploadCropper = true
+      }, 300)
+    },
+    closeAvatarUpload() {
+      this.showUploadCropper = false
+      this.showUploadAvatar = false
     },
     cropUploadSuccess(res) {
-      this.userInfoForm.avatar = res.data
+      this.showUploadCropper = false
+      this.showUploadAvatar = false
+
+      const loading = this.$loading({
+        lock: true,
+        text: '更新头像中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+
+      const newAvatar = res.data
+      this.userInfo.avatar = newAvatar
+      this.userInfoForm.avatar = newAvatar
       this.updateUserHandle()
+
+      setTimeout(() => {
+        loading.close()
+      }, 500)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.member-container {
+.profile-container {
   display: flex;
-  align-content: center;
   justify-content: center;
-  padding: 20px 0;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 30px 15px;
   background-color: #f5f7fa;
-  min-height: calc(100vh - 50px);
 }
 
-.member-box-card {
-  margin-top: 20px;
-  width: 900px;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+.profile-card {
+  width: 100%;
+  max-width: 800px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  overflow: hidden;
 
   &:hover {
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
   }
 }
 
-.member-info-view {
-  padding: 20px;
+.profile-header {
+  padding: 20px 25px 0;
 }
 
 .profile-title {
-  color: #303133;
+  position: relative;
   font-size: 20px;
   font-weight: 600;
-  margin-bottom: 30px;
-  position: relative;
-  padding-left: 15px;
+  color: #303133;
+  margin: 0 0 20px 0;
+  padding-left: 12px;
 
   &::before {
     content: '';
@@ -464,87 +462,53 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     width: 4px;
-    height: 20px;
-    background: linear-gradient(45deg, #1890ff, #36cfc9);
+    height: 18px;
+    background: linear-gradient(135deg, #1890ff, #36cfc9);
     border-radius: 2px;
   }
 }
 
 .profile-content {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 40px;
-  animation: fadeIn 0.5s ease-out;
+  flex-direction: column;
+  padding: 0 25px 25px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-start;
+  }
 }
 
-.profile-left {
-  flex: 1;
-  padding-right: 40px;
-}
-
-.profile-item {
+.profile-avatar-section {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 25px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
-  transition: all 0.3s ease;
+  margin-bottom: 30px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f9fafc;
 
-  &:hover {
-    transform: translateX(5px);
-    border-bottom-color: #e6f7ff;
+  @media (min-width: 768px) {
+    width: 200px;
+    margin-right: 30px;
+    margin-bottom: 0;
   }
-}
-
-.profile-label {
-  width: 80px;
-  color: #606266;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.profile-value {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  span {
-    color: #303133;
-    font-size: 15px;
-  }
-
-  .edit-btn {
-    transition: all 0.3s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
-    }
-  }
-}
-
-.profile-right {
-  width: 180px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 20px;
 }
 
 .avatar-container {
   position: relative;
   width: 120px;
   height: 120px;
+  margin-bottom: 15px;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 
   &:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 
     .avatar-overlay {
       opacity: 1;
@@ -552,8 +516,8 @@ export default {
   }
 
   .profile-avatar {
-    width: 120px !important;
-    height: 120px !important;
+    width: 100%;
+    height: 100%;
   }
 
   .avatar-overlay {
@@ -562,11 +526,11 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background: rgba(0, 0, 0, 0.5);
     opacity: 0;
     transition: opacity 0.3s ease;
 
@@ -578,108 +542,287 @@ export default {
 
     span {
       color: white;
-      font-size: 14px;
+      font-size: 12px;
+      padding: 3px 8px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
     }
   }
 }
 
-.third-party-accounts {
-  padding: 10px 0 20px;
-  animation: fadeIn 0.5s ease-out;
+.profile-username {
+  font-size: 18px;
+  font-weight: 500;
+  color: #303133;
 }
 
-.third-party-item {
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: #f0f7ff;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-}
-
-.third-party-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 15px;
-
-  .fa-weixin {
-    font-size: 28px;
-    color: #8c8c8c;
-
-    &.connected {
-      color: #07c160;
-    }
-  }
-}
-
-.third-party-info {
+.profile-info-section {
   flex: 1;
 }
 
-.third-party-name {
-  font-size: 16px;
-  font-weight: 500;
-  color: #303133;
-  margin-bottom: 5px;
+.info-row {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: #f9fafc;
+    border-radius: 6px;
+    border-bottom-color: transparent;
+    transform: translateX(5px);
+  }
 }
 
-.third-party-status {
-  font-size: 14px;
+.info-label {
+  width: 80px;
+  font-weight: 500;
+  color: #606266;
+}
 
-  .connected-text {
-    color: #52c41a;
+.info-value {
+  flex: 1;
+  color: #303133;
+  padding: 0 10px;
+}
+
+.action-btn {
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(24, 144, 255, 0.2);
+  }
+}
+
+/* Custom Dialog Styles */
+:deep(.custom-dialog) {
+  border-radius: 10px;
+  overflow: hidden;
+
+  .el-dialog__header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #f9fafc;
+  }
+
+  .el-dialog__body {
+    padding: 20px;
+  }
+
+  .el-dialog__footer {
+    padding: 15px 20px;
+    border-top: 1px solid #f0f0f0;
+    background-color: #f9fafc;
+  }
+}
+
+/* Avatar Upload Modal */
+.avatar-upload-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+.avatar-modal-content {
+  width: 500px;
+  max-width: 90vw;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease;
+}
+
+.avatar-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #303133;
+  }
+
+  .close-button {
+    background: transparent;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     display: flex;
+    justify-content: center;
     align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #f5f7fa;
+    }
 
     i {
-      margin-left: 5px;
+      font-size: 20px;
+      color: #909399;
     }
   }
+}
 
-  .not-connected-text {
-    color: #bfbfbf;
+.avatar-modal-body {
+  padding: 20px;
+
+  .current-avatar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
   }
 }
 
-.qrcode-container {
+.avatar-modal-footer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 0;
+  justify-content: flex-end;
+  padding: 15px 20px;
+  border-top: 1px solid #f0f0f0;
+  background-color: #f9fafc;
+}
 
-  .qrcode-image {
-    width: 200px;
-    height: 200px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.verification-code-input {
+  display: flex;
+
+  .el-input {
+    margin-right: 10px;
   }
 
-  .qrcode-tip {
-    margin-top: 15px;
-    color: #606266;
-    font-size: 14px;
+  .el-button {
+    white-space: nowrap;
   }
 }
 
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+</style>
+
+<style lang="scss">
+/* Avatar uploader global styles */
+.avatar-modal {
+  .vicp-wrap {
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .vicp-step1 .vicp-drop-area {
+    border: 2px dashed #d9e1ec !important;
+    border-radius: 8px !important;
+    background-color: #f5f7fa !important;
+    transition: all 0.3s ease !important;
+    padding: 30px !important;
+
+    &:hover {
+      border-color: #409eff !important;
+      background-color: #ecf5ff !important;
+    }
+
+    .vicp-icon1 {
+      color: #409eff !important;
+    }
+
+    .vicp-hint {
+      color: #606266 !important;
+      margin-top: 10px !important;
+    }
+  }
+
+  .vicp-step2 {
+    .vicp-crop {
+      background-color: #f5f7fa !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+    }
+
+    .vicp-preview {
+      .vicp-preview-item {
+        border: 2px solid #fff !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        border-radius: 4px !important;
+        overflow: hidden !important;
+
+        &:hover {
+          border-color: #409eff !important;
+        }
+      }
+    }
+
+    .vicp-range input[type='range'] {
+      -webkit-appearance: none !important;
+      height: 6px !important;
+      background: #e4e7ed !important;
+      border-radius: 3px !important;
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none !important;
+        width: 16px !important;
+        height: 16px !important;
+        background: #409eff !important;
+        border-radius: 50% !important;
+        border: 2px solid #fff !important;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2) !important;
+      }
+    }
+
+    .vicp-operate a {
+      border-radius: 4px !important;
+
+      &:last-child {
+        background-color: #409eff !important;
+
+        &:hover {
+          background-color: #66b1ff !important;
+        }
+      }
+    }
+  }
+}
+
+/* Hide original close button */
+.vicp-close {
+  display: none !important;
 }
 </style>

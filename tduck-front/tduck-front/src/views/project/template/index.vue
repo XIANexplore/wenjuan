@@ -1,67 +1,86 @@
 <template>
-  <div class="create-container">
-    <div>
-      <div class="create-header-container">
-        <div class="filter-container">
-          <el-form ref="form" :inline="true">
-            <el-form-item label="">
-              <el-input
-                v-model="queryParams.name"
-                class="width80"
-                placeholder="请输入模板名称"
-                @keyup.enter="queryTemplatePage"
-              />
-            </el-form-item>
-            <el-form-item>
-              <el-button class="search-template-btn" type="primary" @click="queryTemplatePage" icon="el-icon-search">
-                查询</el-button
-              >
-            </el-form-item>
-          </el-form>
-        </div>
-        <el-menu
-          :default-active="queryParams.type"
-          mode="horizontal"
-          style="background-color: transparent"
-          @select="
-            (index) => {
-              queryParams.type = index
-              queryTemplatePage()
-            }
-          "
-        >
-          <el-menu-item :`index`="null"> 全部</el-menu-item>
-          <el-menu-item v-for="(item, index) in templateTypeList" :key="index" :index="item.id.toString()">
-            {{ item.name }}
-          </el-menu-item>
-        </el-menu>
+  <div class="template-container fade-in">
+    <!-- Header section with search and filters -->
+    <div class="template-header">
+      <div class="search-section">
+        <el-input
+          v-model="queryParams.name"
+          placeholder="搜索模板..."
+          prefix-icon="el-icon-search"
+          clearable
+          @keyup.enter.native="queryTemplatePage"
+        />
+        <el-button type="primary" @click="queryTemplatePage" class="search-btn"> 查询 </el-button>
       </div>
-      <div class="project-grid-container">
-        <div class="project-grid-view">
-          <div v-for="template in templateList" :key="template.id" class="project-template-view">
-            <img
-              :src="template.coverImg ? template.coverImg : require('@/assets/images/99d0.png')"
-              class="preview-img"
-            />
-            <p class="project-template-title">
-              {{ template.name }}
-            </p>
-            <div class="">
-              <el-button icon="el-icon-view" type="text" @click="toProjectTemplate(template.formKey)"> 查看</el-button>
-              <el-button icon="el-icon-delete" type="text" @click="handleDelete(template)"> 删除</el-button>
+
+      <div class="category-tabs">
+        <el-tabs v-model="queryParams.type" @tab-click="queryTemplatePage" stretch>
+          <el-tab-pane label="全部" name=""></el-tab-pane>
+          <el-tab-pane
+            v-for="(item, index) in templateTypeList"
+            :key="index"
+            :label="item.name"
+            :name="item.id.toString()"
+          ></el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
+
+    <!-- Template grid section -->
+    <div class="template-content">
+      <transition-group name="template-list" tag="div" class="template-grid">
+        <div v-for="template in templateList" :key="template.id" class="template-card card-hover-effect">
+          <div class="template-card-inner">
+            <div class="template-image">
+              <img
+                :src="template.coverImg ? template.coverImg : require('@/assets/images/99d0.png')"
+                :alt="template.name"
+              />
+            </div>
+            <div class="template-info">
+              <h3 class="template-title">{{ template.name }}</h3>
+              <p v-if="template.description" class="template-description">{{ template.description }}</p>
+            </div>
+            <div class="template-actions">
+              <el-button
+                type="primary"
+                icon="el-icon-view"
+                size="small"
+                @click="toProjectTemplate(template.formKey)"
+                class="btn-hover-effect"
+              >
+                查看
+              </el-button>
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                size="small"
+                @click="handleDelete(template)"
+                class="btn-hover-effect"
+              >
+                删除
+              </el-button>
             </div>
           </div>
         </div>
-      </div>
+
+        <!-- Empty state when no templates are found -->
+        <div v-if="templateList.length === 0" key="empty" class="empty-state">
+          <i class="el-icon-document"></i>
+          <p>暂无模板</p>
+        </div>
+      </transition-group>
     </div>
-    <div class="text-center">
+
+    <!-- Pagination -->
+    <div class="template-pagination">
       <el-pagination
-        v-if="total > 10"
+        v-if="total > 0"
         :current-page.sync="queryParams.current"
         :page-size.sync="queryParams.size"
         :total="total"
         background
-        layout="total, prev, pager, next"
+        layout="total, prev, pager, next, jumper"
         @current-change="queryTemplatePage"
       />
     </div>
@@ -77,21 +96,21 @@ import {
 import { createFormRequest } from '@/api/project/form'
 
 export default {
-  name: 'CreateProject',
+  name: 'TemplateIndex',
   data() {
     return {
       queryParams: {
         current: 1,
         size: 12,
         name: '',
-        type: null
+        type: ''
       },
       total: 0,
       templateTypeList: [],
-      templateList: []
+      templateList: [],
+      loading: false
     }
   },
-  computed: {},
   created() {
     this.queryTemplateType()
     this.queryTemplatePage()
@@ -103,127 +122,271 @@ export default {
       })
     },
     toProjectTemplate(key) {
-      this.$router.push({ path: '/project/template/preview', query: { key: key } })
+      this.$router.push({
+        path: '/project/template/preview',
+        query: { key: key }
+      })
     },
     handleDelete(item) {
-      this.$confirm(`此操作将永久删除${item.name}, 是否继续?`, '提示', {
+      this.$confirm(`此操作将永久删除模板"${item.name}", 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        deleteFormTemplateRequest({ formKey: item.formKey }).then((res) => {
-          this.msgSuccess('删除成功')
-          this.queryTemplatePage()
-        })
       })
+        .then(() => {
+          this.loading = true
+          deleteFormTemplateRequest({ formKey: item.formKey })
+            .then((res) => {
+              this.loading = false
+              this.msgSuccess('删除成功')
+              this.queryTemplatePage()
+            })
+            .catch(() => {
+              this.loading = false
+            })
+        })
+        .catch(() => {})
     },
     queryTemplatePage() {
-      getFormTemplatePageRequest(this.queryParams).then((res) => {
-        let { records, total, size } = res.data
-        this.templateList = records
-        this.total = total
-        this.queryParams.size = size
-        this.projectListLoading = false
-      })
+      this.loading = true
+      getFormTemplatePageRequest(this.queryParams)
+        .then((res) => {
+          let { records, total, size } = res.data
+          this.templateList = records
+          this.total = total
+          this.queryParams.size = size
+          this.loading = false
+        })
+        .catch(() => {
+          this.loading = false
+        })
     },
     createBlankTemplate() {
-      createFormRequest({ description: '表单模板', name: '表单模板' }).then((res) => {
-        this.$router.push({ path: '/project/form', query: { key: res.data } })
-      })
+      this.loading = true
+      createFormRequest({ description: '表单模板', name: '表单模板' })
+        .then((res) => {
+          this.loading = false
+          this.$router.push({ path: '/project/form', query: { key: res.data } })
+        })
+        .catch(() => {
+          this.loading = false
+        })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.preview-img {
-  width: 90%;
-  height: 130px;
-  margin-top: 8px;
-  border-radius: 10px;
-}
-
-.create-container {
+.template-container {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 50px 150px;
-  width: 100%;
-
-  .el-pagination {
-    margin-top: 20px;
-  }
+  padding: 2rem;
 }
 
-.create-header-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+.template-header {
+  margin-bottom: 2rem;
 }
 
-.filter-container {
+.search-section {
   display: flex;
-  justify-content: flex-start;
-  margin-top: 20px !important;
+  align-items: center;
+  margin-bottom: 1.5rem;
 
   .el-input {
-    display: inline-block;
-    width: 300px !important;
+    max-width: 400px;
+  }
+
+  .search-btn {
+    margin-left: 1rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
+    }
   }
 }
 
-.project-grid-view {
+.category-tabs {
+  .el-tabs__nav-wrap::after {
+    height: 1px;
+    background-color: #f0f0f0;
+  }
+
+  .el-tabs__item {
+    height: 50px;
+    line-height: 50px;
+    transition: all 0.3s ease;
+
+    &.is-active {
+      font-weight: 600;
+      color: #1890ff;
+    }
+
+    &:hover {
+      color: #1890ff;
+    }
+  }
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.template-card {
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+
+    .template-actions {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.template-card-inner {
   display: flex;
-  max-width: 1200px;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
+  height: 100%;
 }
 
-.tag-title {
-  font-size: 20px;
-  border-bottom: 3px solid rgba(68, 68, 68, 100);
-  line-height: 25px;
+.template-image {
+  height: 180px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
 }
 
-.project-template-view {
-  width: 151px;
-  height: 196px;
-  line-height: 20px;
-  border-radius: 10px;
-  text-align: center;
-  margin: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
-  background: white;
-  position: relative;
+.template-info {
+  padding: 1rem;
+  flex-grow: 1;
 }
 
-.project-template-view:hover .project-template-use-view {
-  display: block;
-  cursor: pointer;
-}
-
-.project-template-use-view {
-  position: absolute;
-  width: 100%;
-  height: 28px;
-  z-index: 100;
-  background-color: #f0f0f0;
-  filter: alpha(opacity=60);
-  -moz-opacity: 0.6;
-  opacity: 0.6;
-  display: none;
-  border: none;
-}
-
-.project-template-title {
-  color: rgba(16, 16, 16, 100);
-  font-size: 14px;
-  margin: 0 3px;
-  line-height: 20px;
+.template-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: #303133;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.el-menu.el-menu--horizontal {
-  border-bottom: none;
+.template-description {
+  font-size: 13px;
+  color: #909399;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.template-actions {
+  padding: 0.5rem 1rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  opacity: 0.8;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background-color: #fafafa;
+  border-radius: 8px;
+  color: #909399;
+
+  i {
+    font-size: 48px;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.template-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+// Animations
+.template-list-enter-active,
+.template-list-leave-active {
+  transition: all 0.5s;
+}
+
+.template-list-enter,
+.template-list-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.template-list-move {
+  transition: transform 0.5s;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .template-container {
+    padding: 1rem;
+  }
+
+  .template-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .template-image {
+    height: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-section {
+    flex-direction: column;
+    align-items: stretch;
+
+    .el-input {
+      max-width: 100%;
+    }
+
+    .search-btn {
+      margin: 1rem 0 0;
+      width: 100%;
+    }
+  }
+
+  .template-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

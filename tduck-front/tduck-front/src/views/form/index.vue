@@ -3,7 +3,9 @@
     <el-card class="header-container">
       <el-row align="middle" type="flex" :gutter="5" style="height: 50px">
         <i class="el-icon-back" @click="$router.back(-1)" />
-        <img class="header-logo" src="~@/assets/images/custom-logo.svg" @click="$router.push({ path: '/home' })" />
+        <div class="logo-container">
+          <img class="header-logo" src="~@/assets/images/custom-logo.svg" @click="$router.push({ path: '/home' })" />
+        </div>
         <el-col />
         <el-button type="primary" icon="el-icon-view" @click="previewDialogVisible = true"> 预览 </el-button>
         <el-button type="success" icon="el-icon-folder-add" @click="saveProjectAsTemplateHandle">
@@ -153,14 +155,23 @@ export default {
     }
   }
 
+  .logo-container {
+    position: relative;
+    z-index: 1000;
+  }
+
   .header-logo {
     height: 35px;
     width: 160px;
     vertical-align: middle;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+    position: fixed;
+    z-index: 1000;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
 
     &:hover {
       transform: scale(1.05);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
     }
   }
 }

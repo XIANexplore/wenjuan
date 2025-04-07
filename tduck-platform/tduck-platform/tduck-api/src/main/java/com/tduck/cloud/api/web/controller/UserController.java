@@ -22,6 +22,7 @@ import com.tduck.cloud.wx.mp.entity.WxMpUserEntity;
 import com.tduck.cloud.wx.mp.request.WxMpQrCodeGenRequest;
 import com.tduck.cloud.wx.mp.service.WxMpUserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final UserAuthorizeService userAuthorizeService;
@@ -44,6 +46,7 @@ public class UserController {
 
     /***
      * 当前登录用户详情
+     *
      * @param userId
      * @return
      */
@@ -52,7 +55,7 @@ public class UserController {
         UserEntity userEntity = userService.getById(userId);
         UserDetailVO userDetailVO = new UserDetailVO();
         BeanUtil.copyProperties(userEntity, userDetailVO);
-        //第三方账号信息
+        // 第三方账号信息
         UserAuthorizeEntity authorizeEntity = userAuthorizeService.getByUserId(UserAuthorizeTypeEnum.QQ, userId);
         if (ObjectUtil.isNotNull(authorizeEntity)) {
             userDetailVO.setQqName(authorizeEntity.getUserName());
@@ -65,9 +68,9 @@ public class UserController {
         return Result.success(userDetailVO);
     }
 
-
     /***
      * 修改当前用户信息
+     *
      * @param userEntity
      * @return
      */
@@ -77,7 +80,6 @@ public class UserController {
         userEntity.setId(userId);
         return Result.success(userService.updateById(userEntity));
     }
-
 
     /**
      * 发送绑定邮箱邮件
@@ -94,7 +96,6 @@ public class UserController {
         userValidateService.sendUpdateAccountEmail(email, userId);
         return Result.success(true);
     }
-
 
     /**
      * 修改邮箱
@@ -119,21 +120,42 @@ public class UserController {
         return Result.success(true);
     }
 
-
     /**
      * 绑定微信二维码
      *
      * @return
      */
     @GetMapping("/bind/wx/qrcode")
-    public Result getBindWxQrcode(@RequestAttribute Long userId) throws WxErrorException {
-        String bindSceneStr = JsonUtils.objToJson(new WxMpQrCodeGenRequest(WxMpQrCodeGenRequest.QrCodeType.BIND_ACCOUNT, String.valueOf(userId)));
-        //5分钟有效
-        WxMpQrCodeTicket ticket = wxMpService.getQrcodeService().qrCodeCreateTmpTicket(bindSceneStr, 10 * 60);
-        String bindAccountQrcodeUrl = wxMpService.getQrcodeService().qrCodePictureUrl(ticket.getTicket());
-        return Result.success(bindAccountQrcodeUrl);
-    }
+    public Result getBindWxQrcode(@RequestAttribute Long userId) {
+        try {
+            // Check if wxMpService is properly configured
+            if (wxMpService == null) {
+                log.error("微信公众号服务不存在，无法生成二维码");
+                return Result.failed("微信公众号服务未初始化");
+            }
 
+            try {
+                // This will throw NullPointerException if not configured
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    log.error("微信公众号配置不存在，无法生成二维码");
+                    return Result.failed("微信公众号未配置，请先在系统设置中配置微信公众号");
+                }
+            } catch (NullPointerException e) {
+                log.error("微信公众号配置异常", e);
+                return Result.failed("微信公众号配置异常，请检查配置");
+            }
+
+            String bindSceneStr = JsonUtils.objToJson(
+                    new WxMpQrCodeGenRequest(WxMpQrCodeGenRequest.QrCodeType.BIND_ACCOUNT, String.valueOf(userId)));
+            // 10分钟有效
+            WxMpQrCodeTicket ticket = wxMpService.getQrcodeService().qrCodeCreateTmpTicket(bindSceneStr, 10 * 60);
+            String bindAccountQrcodeUrl = wxMpService.getQrcodeService().qrCodePictureUrl(ticket.getTicket());
+            return Result.success(bindAccountQrcodeUrl);
+        } catch (Exception e) {
+            log.error("获取微信绑定二维码失败", e);
+            return Result.failed("获取微信绑定二维码失败，请检查微信公众号配置");
+        }
+    }
 
     /**
      * 修改密码e
@@ -161,15 +183,15 @@ public class UserController {
 
     @PostMapping("/bind/qq")
     public Result bindQQAccount(@RequestBody QqLoginRequest request, @RequestAttribute Long userId) {
-        UserAuthorizeEntity authorizeEntity = userAuthorizeService.getQqAuthorization(request.getAuthorizeCode(), request.getRedirectUri(), new UserEntity());
+        UserAuthorizeEntity authorizeEntity = userAuthorizeService.getQqAuthorization(request.getAuthorizeCode(),
+                request.getRedirectUri(), new UserEntity());
         if (ObjectUtil.isNotNull(authorizeEntity.getUserId()) && userId.equals(authorizeEntity.getUserId())) {
             return Result.success(false);
         }
-        //更新绑定
+        // 更新绑定
         authorizeEntity.setUserId(userId);
         userAuthorizeService.updateById(authorizeEntity);
         return Result.success();
     }
-
 
 }
