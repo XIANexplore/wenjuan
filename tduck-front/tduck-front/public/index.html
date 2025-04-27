@@ -7,17 +7,10 @@
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
     <style>
-        /* Global styles to ensure avatar stays on top */
+        /* 头像上传组件样式 */
         .vue-image-crop-upload,
-        .vicp-wrap,
-        .avatar-uploader,
-        .profile-right,
-        .avatar-container,
-        .avatar-inner,
-        .profile-avatar,
-        .avatar-overlay {
+        .vicp-wrap {
             z-index: 10001 !important;
-            position: relative;
         }
     </style>
     <% for (var i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.css) { %>

@@ -9,7 +9,9 @@
         <!-- Avatar section -->
         <div class="profile-avatar-section">
           <div class="avatar-container" @click="openAvatarUpload">
-            <el-avatar class="profile-avatar" :size="120" :src="userInfo.avatar" />
+            <el-avatar class="profile-avatar" :size="120" :src="userInfo.avatar || ''" :key="avatarKey">
+              <img v-if="!userInfo.avatar" src="@/assets/images/default-avatar.png" alt="默认头像" />
+            </el-avatar>
             <div class="avatar-overlay">
               <i class="el-icon-camera"></i>
               <span>更换头像</span>
@@ -187,7 +189,9 @@
 
         <div class="avatar-modal-body">
           <div class="current-avatar">
-            <el-avatar :size="100" :src="userInfo.avatar" />
+            <el-avatar :size="100" :src="userInfo.avatar || ''" :key="'modal-' + avatarKey">
+              <img v-if="!userInfo.avatar" src="@/assets/images/default-avatar.png" alt="默认头像" />
+            </el-avatar>
           </div>
 
           <my-upload
@@ -249,6 +253,9 @@ export default {
         callback()
       }
     }
+
+    // 添加avatarKey用于强制刷新头像
+    const avatarKey = Date.now()
     return {
       phoneValidateCodeBtnText: '发送验证码',
       userInfoRules: {
@@ -410,6 +417,8 @@ export default {
       const newAvatar = res.data
       this.userInfo.avatar = newAvatar
       this.userInfoForm.avatar = newAvatar
+      // 更新avatarKey强制刷新头像
+      this.avatarKey = Date.now()
       this.updateUserHandle()
 
       setTimeout(() => {
