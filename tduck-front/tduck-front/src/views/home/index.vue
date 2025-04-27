@@ -78,6 +78,11 @@ export default {
           icon: 'fa-pencil-square'
         },
         {
+          route: '/project/square',
+          name: '问卷广场',
+          icon: 'fa-list-alt'
+        },
+        {
           route: '/project/template',
           name: '共享模板',
           icon: 'fa-caret-square-o-up'

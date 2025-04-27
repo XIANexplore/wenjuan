@@ -38,6 +38,11 @@ export default [
         path: 'template/preview',
         meta: { requireLogin: true },
         component: () => import(/* webpackChunkName: 'root' */ '@/views/project/template/preview.vue')
+      },
+      {
+        path: 'square',
+        meta: { requireLogin: false },
+        component: () => import(/* webpackChunkName: 'root' */ '@/views/project/square/index')
       }
     ]
   },

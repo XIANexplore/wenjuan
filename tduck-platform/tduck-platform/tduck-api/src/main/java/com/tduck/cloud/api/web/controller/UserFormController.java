@@ -42,7 +42,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 /**
  * 用户表单
  *
@@ -64,7 +63,6 @@ public class UserFormController {
     private final FormTemplateService formTemplateService;
     private final UserFormLogicService userFormLogicService;
 
-
     /**
      * 创建表单
      */
@@ -72,7 +70,8 @@ public class UserFormController {
     public Result createForm(@RequestBody UserFormEntity form, @RequestAttribute Long userId) {
         if (ObjectUtil.isNotNull(form.getFolderId()) && 0 != form.getFolderId()) {
             // 检查文件夹是否存在
-            long count = formService.count(Wrappers.<UserFormEntity>lambdaQuery().eq(BaseEntity::getId, form.getFolderId()).eq(UserFormEntity::getDeleted, 0));
+            long count = formService.count(Wrappers.<UserFormEntity>lambdaQuery()
+                    .eq(BaseEntity::getId, form.getFolderId()).eq(UserFormEntity::getDeleted, 0));
             if (count == 0) {
                 return Result.failed("文件夹不存在");
             }
@@ -87,7 +86,6 @@ public class UserFormController {
         return Result.success(form);
     }
 
-
     /**
      * 从模板创建表单
      */
@@ -97,13 +95,15 @@ public class UserFormController {
         return Result.success(userForm.getFormKey());
     }
 
-
     /**
      * 根据条件查询所有表单
      */
     @GetMapping("/user/form/list")
     public Result listForms(QueryFormRequest.List request, @RequestAttribute Long userId) {
-        List<UserFormEntity> entityList = formService.list(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getUserId, userId).eq(ObjectUtil.isNotNull(request.getStatus()), UserFormEntity::getStatus, request.getStatus()).orderByDesc(BaseEntity::getUpdateTime));
+        List<UserFormEntity> entityList = formService
+                .list(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getUserId, userId)
+                        .eq(ObjectUtil.isNotNull(request.getStatus()), UserFormEntity::getStatus, request.getStatus())
+                        .orderByDesc(BaseEntity::getUpdateTime));
         return Result.success(entityList);
     }
 
@@ -112,7 +112,8 @@ public class UserFormController {
      */
     @GetMapping("/user/form/page")
     public Result queryMyForms(@RequestAttribute Long userId, QueryFormRequest.Page request) {
-        LambdaQueryWrapper<UserFormEntity> queryWrapper = Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getUserId, userId)
+        LambdaQueryWrapper<UserFormEntity> queryWrapper = Wrappers.<UserFormEntity>lambdaQuery()
+                .eq(UserFormEntity::getUserId, userId)
                 .eq(ObjectUtil.isNotNull(request.getFolder()), UserFormEntity::getFolder, request.getFolder())
                 .eq(ObjectUtil.isNotNull(request.getType()), UserFormEntity::getType, request.getType())
                 .eq(UserFormEntity::getDeleted, 0).func(i -> {
@@ -121,7 +122,13 @@ public class UserFormController {
                     } else {
                         i.eq(UserFormEntity::getFolderId, request.getFolderId());
                     }
-                }).eq(ObjectUtil.isNotNull(request.getStatus()), UserFormEntity::getStatus, request.getStatus()).like(StrUtil.isNotBlank(request.getName()), UserFormEntity::getName, request.getName()).le(ObjectUtil.isNotNull(request.getEndDateTime()), UserFormEntity::getUpdateTime, request.getEndDateTime()).ge(ObjectUtil.isNotNull(request.getBeginDateTime()), UserFormEntity::getUpdateTime, request.getBeginDateTime()).orderByDesc(UserFormEntity::getFolder).orderByDesc(BaseEntity::getCreateTime);
+                }).eq(ObjectUtil.isNotNull(request.getStatus()), UserFormEntity::getStatus, request.getStatus())
+                .like(StrUtil.isNotBlank(request.getName()), UserFormEntity::getName, request.getName())
+                .le(ObjectUtil.isNotNull(request.getEndDateTime()), UserFormEntity::getUpdateTime,
+                        request.getEndDateTime())
+                .ge(ObjectUtil.isNotNull(request.getBeginDateTime()), UserFormEntity::getUpdateTime,
+                        request.getBeginDateTime())
+                .orderByDesc(UserFormEntity::getFolder).orderByDesc(BaseEntity::getCreateTime);
         return Result.success(formService.page(request.toMybatisPage(), queryWrapper));
     }
 
@@ -130,11 +137,13 @@ public class UserFormController {
      */
     @GetMapping("/user/form/folderTree")
     public Result queryMyFormFolderTree(@RequestAttribute Long userId) {
-        List<UserFormEntity> list = formService.list(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getUserId, userId).eq(UserFormEntity::getFolder, 1));
-        List<TreeNode<Long>> nodeList = list.stream().map(item -> new TreeNode<>(item.getId(), item.getFolderId(), item.getName(), 5)).collect(Collectors.toList());
+        List<UserFormEntity> list = formService.list(Wrappers.<UserFormEntity>lambdaQuery()
+                .eq(UserFormEntity::getUserId, userId).eq(UserFormEntity::getFolder, 1));
+        List<TreeNode<Long>> nodeList = list.stream()
+                .map(item -> new TreeNode<>(item.getId(), item.getFolderId(), item.getName(), 5))
+                .collect(Collectors.toList());
         return Result.success(TreeUtil.build(nodeList, 0L));
     }
-
 
     /**
      * 查询表单
@@ -144,14 +153,14 @@ public class UserFormController {
         return Result.success(formService.getByKey(key));
     }
 
-
     /**
      * 发布表单
      */
     @PostMapping("/user/form/publish")
     public Result publishForm(@RequestBody UserFormEntity request) {
         FormAuthUtils.hasPermission(request.getFormKey());
-        long count = formItemService.count(Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getFormKey()));
+        long count = formItemService.count(
+                Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getFormKey()));
         if (count == CommonConstants.ConstantNumber.ZERO) {
             return Result.failed("无有效表单项，无法发布");
         }
@@ -181,9 +190,11 @@ public class UserFormController {
     @PostMapping("/user/form/logic/delete")
     public Result logicDeleteForm(@RequestBody UserFormEntity request) {
         FormAuthUtils.hasPermission(request.getFormKey());
-        boolean del = formService.update(new UserFormEntity() {{
-            setDeleted(Boolean.TRUE);
-        }}, Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getFormKey, request.getFormKey()));
+        boolean del = formService.update(new UserFormEntity() {
+            {
+                setDeleted(Boolean.TRUE);
+            }
+        }, Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getFormKey, request.getFormKey()));
         return Result.success(del);
     }
 
@@ -196,17 +207,19 @@ public class UserFormController {
     public Result deleteForm(@RequestBody UserFormEntity request) {
         // 如果文件夹下面存在表单 不允许删除
         FormAuthUtils.hasPermission(request.getFormKey());
-        UserFormEntity formEntity = formService.getOne(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getFormKey, request.getFormKey()));
+        UserFormEntity formEntity = formService
+                .getOne(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getFormKey, request.getFormKey()));
         if (formEntity.getFolder()) {
-            long count = formService.count(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getDeleted, 0).eq(UserFormEntity::getFolderId, formEntity.getId()));
+            long count = formService.count(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getDeleted, 0)
+                    .eq(UserFormEntity::getFolderId, formEntity.getId()));
             if (count > 0) {
                 return Result.failed("当前文件夹下存在表单，不允许删除");
             }
         }
-        boolean del = formService.remove(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getFormKey, request.getFormKey()));
+        boolean del = formService
+                .remove(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getFormKey, request.getFormKey()));
         return Result.success(del);
     }
-
 
     /**
      * 查询表单详情
@@ -221,10 +234,12 @@ public class UserFormController {
         if (ObjectUtil.isNull(form)) {
             return Result.success();
         }
-        List<UserFormItemEntity> formItemList = formItemService.list(Wrappers.<UserFormItemEntity>lambdaQuery().ne(UserFormItemEntity::getHideType, 1).eq(UserFormItemEntity::getFormKey, key));
+        List<UserFormItemEntity> formItemList = formItemService.list(Wrappers.<UserFormItemEntity>lambdaQuery()
+                .ne(UserFormItemEntity::getHideType, 1).eq(UserFormItemEntity::getFormKey, key));
         formItemList.sort(Comparator.comparing(UserFormItemEntity::getSort));
         UserFormThemeEntity theme = userFormThemeService.getByKey(key);
-        UserFormLogicEntity formLogic = userFormLogicService.getOne(Wrappers.<UserFormLogicEntity>lambdaQuery().eq(UserFormLogicEntity::getFormKey, key));
+        UserFormLogicEntity formLogic = userFormLogicService
+                .getOne(Wrappers.<UserFormLogicEntity>lambdaQuery().eq(UserFormLogicEntity::getFormKey, key));
         // 如果是考试 移除正确答案 避免把正确答案返回到前端
         if (form.getType() == FormTypeEnum.EXAM) {
             formItemList.forEach(item -> {
@@ -235,9 +250,9 @@ public class UserFormController {
                 item.setScheme(schemeJson);
             });
         }
-        return Result.success(new UserFormDetailVO(new UserFormDetailVO.UserForm(form), formItemList, theme, formLogic));
+        return Result
+                .success(new UserFormDetailVO(new UserFormDetailVO.UserForm(form), formItemList, theme, formLogic));
     }
-
 
     /**
      * 表单更新
@@ -263,7 +278,9 @@ public class UserFormController {
     public Result queryFormItems(QueryFormItemRequest request) {
         ValidatorUtils.validateEntity(request);
         FormAuthUtils.hasPermission(request.getKey());
-        List<UserFormItemEntity> itemEntityList = formItemService.list(Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getKey()).eq(ObjectUtil.isNotNull(request.getDisplayType()), UserFormItemEntity::getDisplayType, request.getDisplayType()));
+        List<UserFormItemEntity> itemEntityList = formItemService.list(Wrappers.<UserFormItemEntity>lambdaQuery()
+                .eq(UserFormItemEntity::getFormKey, request.getKey()).eq(ObjectUtil.isNotNull(request.getDisplayType()),
+                        UserFormItemEntity::getDisplayType, request.getDisplayType()));
         itemEntityList.sort(Comparator.comparing(UserFormItemEntity::getSort));
         return Result.success(itemEntityList);
     }
@@ -295,7 +312,6 @@ public class UserFormController {
         return Result.success(fields);
     }
 
-
     /**
      * 项目表单项创建
      *
@@ -310,7 +326,7 @@ public class UserFormController {
         if (ObjectUtil.isNull(entity.getHideType())) {
             entity.setHideType(false);
         }
-        //排序下标计算
+        // 排序下标计算
         entity.setSort(sortUtils.getInitialSortPosition(entity.getFormKey()));
         entity.setSpecialType(formItemService.isSpecialTypeItem(entity));
         boolean save = formItemService.save(entity);
@@ -322,12 +338,11 @@ public class UserFormController {
      */
     @PostMapping("/user/form/item/batch/create")
     public Result batchCreateFormItem(@RequestBody List<UserFormItemEntity> itemEntityList) {
-        //排序下标计算
+        // 排序下标计算
         itemEntityList.forEach(item -> item.setSort(sortUtils.getInitialSortPosition(item.getFormKey())));
         boolean save = formItemService.saveBatch(itemEntityList);
         return Result.success();
     }
-
 
     /**
      * 表单项更新
@@ -339,10 +354,11 @@ public class UserFormController {
         FormAuthUtils.hasPermission(request.getFormKey());
         ValidatorUtils.validateEntity(request, UpdateGroup.class);
         request.setSpecialType(formItemService.isSpecialTypeItem(request));
-        boolean update = formItemService.update(request, Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getFormKey()).eq(UserFormItemEntity::getFormItemId, request.getFormItemId()));
+        boolean update = formItemService.update(request,
+                Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getFormKey())
+                        .eq(UserFormItemEntity::getFormItemId, request.getFormItemId()));
         return Result.success(update);
     }
-
 
     /**
      * 表单项删除
@@ -350,7 +366,9 @@ public class UserFormController {
     @PostMapping("/user/form/item/delete")
     public Result deleteFormItem(@RequestBody UserFormItemEntity request) {
         FormAuthUtils.hasPermission(request.getFormKey());
-        boolean delete = formItemService.remove(Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getFormKey()).eq(UserFormItemEntity::getFormItemId, request.getFormItemId()));
+        boolean delete = formItemService.remove(
+                Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getFormKey())
+                        .eq(UserFormItemEntity::getFormItemId, request.getFormItemId()));
         return Result.success(delete);
     }
 
@@ -365,16 +383,19 @@ public class UserFormController {
         if (ObjectUtil.isNull(request.getAfterPosition()) && ObjectUtil.isNull(request.getBeforePosition())) {
             return Result.success();
         }
-        UserFormItemEntity itemEntity = formItemService.getOne(Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getFormKey()).eq(UserFormItemEntity::getFormItemId, request.getFormItemId()));
-        Long sort = sortUtils.calcSortPosition(request.getBeforePosition(), request.getAfterPosition(), request.getFormKey());
-        if (sortUtils.sortAllList(request.getBeforePosition(), request.getAfterPosition(), request.getFormKey(), sort)) {
+        UserFormItemEntity itemEntity = formItemService.getOne(
+                Wrappers.<UserFormItemEntity>lambdaQuery().eq(UserFormItemEntity::getFormKey, request.getFormKey())
+                        .eq(UserFormItemEntity::getFormItemId, request.getFormItemId()));
+        Long sort = sortUtils.calcSortPosition(request.getBeforePosition(), request.getAfterPosition(),
+                request.getFormKey());
+        if (sortUtils.sortAllList(request.getBeforePosition(), request.getAfterPosition(), request.getFormKey(),
+                sort)) {
             return Result.success(new OperateFormItemVO(itemEntity.getSort(), itemEntity.getId(), true, true));
         }
         itemEntity.setSort(sort);
         boolean b = formItemService.updateById(itemEntity);
         return Result.success(new OperateFormItemVO(itemEntity.getSort(), itemEntity.getId(), b, false));
     }
-
 
     /**
      * 项目主题保存
@@ -388,13 +409,13 @@ public class UserFormController {
         if (ObjectUtil.isNull(themeEntity.getShowSubmitBtn())) {
             themeEntity.setShowSubmitBtn(true);
         }
-        UserFormThemeEntity entity = userFormThemeService.getOne(Wrappers.<UserFormThemeEntity>lambdaQuery().eq(UserFormThemeEntity::getFormKey, themeEntity.getFormKey()));
+        UserFormThemeEntity entity = userFormThemeService.getOne(Wrappers.<UserFormThemeEntity>lambdaQuery()
+                .eq(UserFormThemeEntity::getFormKey, themeEntity.getFormKey()));
         if (ObjectUtil.isNotNull(entity)) {
             themeEntity.setId(entity.getId());
         }
         return Result.success(userFormThemeService.saveOrUpdate(themeEntity));
     }
-
 
     /**
      * 项目主题查询
@@ -404,21 +425,25 @@ public class UserFormController {
     @GetMapping("/user/form/theme/{key}")
     public Result queryThemeByKey(@PathVariable("key") String formKey) {
         FormAuthUtils.hasPermission(formKey);
-        UserFormThemeEntity entity = userFormThemeService.getOne(Wrappers.<UserFormThemeEntity>lambdaQuery().eq(UserFormThemeEntity::getFormKey, formKey));
+        UserFormThemeEntity entity = userFormThemeService
+                .getOne(Wrappers.<UserFormThemeEntity>lambdaQuery().eq(UserFormThemeEntity::getFormKey, formKey));
         return Result.success(entity);
     }
-
 
     /**
      * 回收站项目分页
      */
     @GetMapping("/user/form/recycle/page")
     public Result queryRecycleForms(@RequestAttribute Long userId, QueryFormRequest.Page request) {
-        Page page = formService.page(request.toMybatisPage(), Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getUserId, userId).eq(UserFormEntity::getDeleted, 1).orderByDesc(BaseEntity::getUpdateTime));
+        Page page = formService.page(request.toMybatisPage(),
+                Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getUserId, userId)
+                        .eq(UserFormEntity::getDeleted, 1).orderByDesc(BaseEntity::getUpdateTime));
         List<UserFormEntity> records = page.getRecords();
         List<RecycleFormVO> FormVOList = records.stream().map(item -> {
-            long count = userFormDataService.count(Wrappers.<UserFormDataEntity>lambdaQuery().eq(UserFormDataEntity::getFormKey, item.getFormKey()));
-            return new RecycleFormVO(item.getFormKey(), count, item.getTextName(), item.getCreateTime(), item.getUpdateTime());
+            long count = userFormDataService.count(
+                    Wrappers.<UserFormDataEntity>lambdaQuery().eq(UserFormDataEntity::getFormKey, item.getFormKey()));
+            return new RecycleFormVO(item.getFormKey(), count, item.getTextName(), item.getCreateTime(),
+                    item.getUpdateTime());
         }).collect(Collectors.toList());
         page.setRecords(FormVOList);
         return Result.success(page);
@@ -429,9 +454,11 @@ public class UserFormController {
      */
     @PostMapping("/user/form/recycle/restore")
     public Result restoreRecycleForm(@RequestBody UserFormEntity request) {
-        boolean flag = formService.update(new UserFormEntity() {{
-            setDeleted(Boolean.FALSE);
-        }}, Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getFormKey, request.getFormKey()));
+        boolean flag = formService.update(new UserFormEntity() {
+            {
+                setDeleted(Boolean.FALSE);
+            }
+        }, Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getFormKey, request.getFormKey()));
         return Result.success(flag);
     }
 
@@ -440,13 +467,29 @@ public class UserFormController {
      */
     @PostMapping("/user/form/recycle/delete")
     public Result deleteRecycleForm(@RequestAttribute Long userId, @RequestBody UserFormEntity FormEntity) {
-        boolean remove = formService.remove(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getUserId, userId).eq(UserFormEntity::getFormKey, FormEntity.getFormKey()));
+        boolean remove = formService.remove(Wrappers.<UserFormEntity>lambdaQuery().eq(UserFormEntity::getUserId, userId)
+                .eq(UserFormEntity::getFormKey, FormEntity.getFormKey()));
         if (remove) {
-            userFormThemeService.remove(Wrappers.<UserFormThemeEntity>lambdaQuery().eq(UserFormThemeEntity::getFormKey, FormEntity.getFormKey()));
+            userFormThemeService.remove(Wrappers.<UserFormThemeEntity>lambdaQuery().eq(UserFormThemeEntity::getFormKey,
+                    FormEntity.getFormKey()));
             userFormSettingService.deleteAllSetting(FormEntity.getFormKey());
         }
         return Result.success(remove);
     }
 
+    /**
+     * 查询公开的问卷列表
+     * 只返回已发布状态的问卷
+     */
+    @GetMapping("/user/form/public/list")
+    @PermitAll
+    public Result<Page<UserFormEntity>> queryPublicForms(QueryFormRequest.Page request) {
+        Page<UserFormEntity> page = formService.page(request.toMybatisPage(),
+                Wrappers.<UserFormEntity>lambdaQuery()
+                        .eq(UserFormEntity::getStatus, FormStatusEnum.RELEASE)
+                        .eq(UserFormEntity::getDeleted, 0)
+                        .orderByDesc(BaseEntity::getCreateTime));
+        return Result.success(page);
+    }
 
 }

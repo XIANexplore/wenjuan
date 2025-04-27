@@ -14,6 +14,7 @@
       </el-card>
     </div>
     <div v-if="writeStatus == 1" class="form-container">
+      <user-info-input ref="userInfoInput" v-if="formConfig.formKey" />
       <biz-project-form v-if="formConfig.formKey" ref="bizProjectForm" :form-config="formConfig" @submit="submitForm" />
     </div>
     <div v-cloak v-if="writeStatus == 2" class="title-icon-view">
@@ -33,6 +34,7 @@ import { removeFormData } from '@/utils/db'
 import { getAuthorizationUrl, getAuthorizationUserInfo, getWxSignature } from '@/api/project/wxmp'
 import { isWxEnv, onlyWxOpenHandle, setWxConfig } from './wx'
 import TduckFormMixin from '../TduckFormMixin'
+import UserInfoInput from './UserInfoInput'
 import { createFormResultRequest, publicCreateFormResultRequest, viewFormResultRequest } from '@/api/project/data'
 import { checkWritePwdRequest, getPublicSettingsRequest, getWriteSettingStatusRequest } from '@/api/project/setting'
 import { jumpUrl } from './SubmitJump'
@@ -46,7 +48,8 @@ require('@/utils/ut')
 export default {
   name: 'WriteView',
   components: {
-    BizProjectForm
+    BizProjectForm,
+    UserInfoInput
   },
   mixins: [TduckFormMixin],
   props: {
@@ -218,21 +221,33 @@ export default {
       })
     },
     async submitForm(data) {
-      // 完成时间
-      this.submitFormData.completeTime = document.getElementById('inActiveTime').innerText
-      this.submitFormData.wxUserInfo = this.wxUserInfo
-      this.submitFormData.wxOpenId = this.wxUserInfo ? this.wxUserInfo.openid : ''
-      this.submitFormData.originalData = data.formModel
-      this.submitFormData.formKey = this.formKey
-      this.submitFormData.formId = data.formId
-      this.submitFormData.formType = this.$refs.bizProjectForm.formConf.formType
-      let res = null
-      if (this.writeType === 1) {
-        res = await publicCreateFormResultRequest(this.submitFormData)
-      } else {
-        res = await createFormResultRequest(this.submitFormData)
+      try {
+        // 验证用户信息
+        const userInfo = await this.$refs.userInfoInput.validate()
+
+        // 完成时间
+        this.submitFormData.completeTime = document.getElementById('inActiveTime').innerText
+        this.submitFormData.wxUserInfo = this.wxUserInfo
+        this.submitFormData.wxOpenId = this.wxUserInfo ? this.wxUserInfo.openid : ''
+        this.submitFormData.originalData = data.formModel
+        this.submitFormData.formKey = this.formKey
+        this.submitFormData.formId = data.formId
+        this.submitFormData.formType = this.$refs.bizProjectForm.formConf.formType
+
+        // 添加用户名和邮箱信息
+        this.submitFormData.userName = userInfo.userName
+        this.submitFormData.userEmail = userInfo.userEmail
+
+        let res = null
+        if (this.writeType === 1) {
+          res = await publicCreateFormResultRequest(this.submitFormData)
+        } else {
+          res = await createFormResultRequest(this.submitFormData)
+        }
+        this.handleSubmitSuccess(res.data)
+      } catch (error) {
+        this.$message.error(error)
       }
-      this.handleSubmitSuccess(res.data)
     },
     // 提交成功后处理
     handleSubmitSuccess(data) {

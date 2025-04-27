@@ -30,7 +30,6 @@ public class UserFormDataEntity extends SysBaseEntity {
     @NotBlank(message = "错误请求")
     private String formKey;
 
-
     /**
      * 提交序号
      */
@@ -41,7 +40,6 @@ public class UserFormDataEntity extends SysBaseEntity {
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
     private Map<String, Object> originalData;
-
 
     @TableField(exist = false)
     private FormTypeEnum formType;
@@ -57,7 +55,6 @@ public class UserFormDataEntity extends SysBaseEntity {
      */
     private String submitOs;
 
-
     /**
      * 提交浏览器
      */
@@ -67,7 +64,6 @@ public class UserFormDataEntity extends SysBaseEntity {
      * 提交ip
      */
     private String submitRequestIp;
-
 
     /**
      * 提交ip
@@ -95,6 +91,14 @@ public class UserFormDataEntity extends SysBaseEntity {
      */
     private String extValue;
 
+    /**
+     * 填写人姓名
+     */
+    private String userName;
 
+    /**
+     * 填写人邮箱
+     */
+    private String userEmail;
 
 }

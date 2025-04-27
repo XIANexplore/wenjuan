@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/wenjuan?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&tinyInt1isBit=false
+    url: jdbc:mysql://localhost:3306/wenjuan?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&tinyInt1isBit=false&allowPublicKeyRetrieval=true
     username: root
     password: 1234
     type: com.zaxxer.hikari.HikariDataSource
@@ -16,7 +16,7 @@ spring:
   mail:
     host: smtp.88.com
     username: # 邮箱账号
-    password:  #邮箱授权码
+    password: #邮箱授权码
 
 logging:
   level:

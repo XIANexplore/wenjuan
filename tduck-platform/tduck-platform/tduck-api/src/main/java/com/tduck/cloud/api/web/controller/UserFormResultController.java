@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-
 /**
  * 表单数据
  *
@@ -112,7 +111,6 @@ public class UserFormResultController {
         return formResultService.getFormDataDetails(dataId);
     }
 
-
     /**
      * 填写附件导出
      *
@@ -123,7 +121,6 @@ public class UserFormResultController {
     public Result downloadFormResultFile(@RequestBody QueryFormResultRequest request) {
         return formResultService.downloadFormResultFile(request);
     }
-
 
     /**
      * 填写
@@ -138,10 +135,14 @@ public class UserFormResultController {
         entity.setSubmitRequestIp(HttpUtils.getIpAddr(request));
         // 如果已经登陆了也记录用户信息 try catch 避免抛出异常
         entity.setCreateBy(SecurityUtils.getUserId() != null ? String.valueOf(SecurityUtils.getUserId()) : null);
+        // 如果没有登录，使用提交的用户名和邮箱
+        if (entity.getCreateBy() == null && StrUtil.isNotBlank(entity.getUserName())
+                && StrUtil.isNotBlank(entity.getUserEmail())) {
+            log.info("未登录用户提交问卷，使用提交的用户信息：userName={}, userEmail={}", entity.getUserName(), entity.getUserEmail());
+        }
         Map<String, Object> result = formResultService.saveFormResult(entity);
         return Result.success(result);
     }
-
 
     /**
      * 公开填写
@@ -151,22 +152,29 @@ public class UserFormResultController {
      */
     @PostMapping("/public/create")
     @PermitAll
-    public Result<Map<String, Object>> createPublicFormResult(@RequestBody UserFormDataEntity entity, HttpServletRequest request) {
+    public Result<Map<String, Object>> createPublicFormResult(@RequestBody UserFormDataEntity entity,
+            HttpServletRequest request) {
         ValidatorUtils.validateEntity(entity);
         entity.setSubmitRequestIp(HttpUtils.getIpAddr(request));
-        Result<Boolean> userFormSettingStatus = userFormSettingService.getUserFormWriteSettingStatus(entity.getFormKey(), entity.getSubmitRequestIp(), entity.getWxOpenId(), CommonConstants.ConstantNumber.ONE);
+        Result<Boolean> userFormSettingStatus = userFormSettingService.getUserFormWriteSettingStatus(
+                entity.getFormKey(), entity.getSubmitRequestIp(), entity.getWxOpenId(),
+                CommonConstants.ConstantNumber.ONE);
         if (StrUtil.isNotBlank(userFormSettingStatus.getMsg())) {
             return Result.failed(userFormSettingStatus.getMsg());
         }
         // 如果已经登陆了也记录用户信息 try catch 避免抛出异常
         entity.setCreateBy(SecurityUtils.getUserId() != null ? String.valueOf(SecurityUtils.getUserId()) : null);
+        // 如果没有登录，使用提交的用户名和邮箱
+        if (entity.getCreateBy() == null && StrUtil.isNotBlank(entity.getUserName())
+                && StrUtil.isNotBlank(entity.getUserEmail())) {
+            log.info("未登录用户公开提交问卷，使用提交的用户信息：userName={}, userEmail={}", entity.getUserName(), entity.getUserEmail());
+        }
         Map<String, Object> result = formResultService.saveFormResult(entity);
         ThreadUtil.execAsync(() -> {
             sendWriteResultNotify(entity.getFormKey());
         });
         return Result.success(result);
     }
-
 
     /**
      * 批量删除
@@ -180,7 +188,6 @@ public class UserFormResultController {
         formResultService.deleteByIds(dataIdList, formKey);
         return Result.success();
     }
-
 
     /**
      * 更新
@@ -226,10 +233,10 @@ public class UserFormResultController {
      * @return Result
      */
     @PostMapping("import")
-    public Result importFormData(@RequestParam("file") MultipartFile file, UserFormDataEntity dataEntity) throws IOException {
+    public Result importFormData(@RequestParam("file") MultipartFile file, UserFormDataEntity dataEntity)
+            throws IOException {
         return Result.success(formDataImportUtils.importFile(file.getInputStream(), dataEntity.getFormKey()));
     }
-
 
     @SneakyThrows
     private void sendWriteResultNotify(String formKey) {
@@ -239,7 +246,8 @@ public class UserFormResultController {
         }
         UserFormEntity form = userFormService.getByKey(formKey);
         if (StrUtil.isNotBlank(formSettingSchema.getNewWriteNotifyEmail())) {
-            MailService.sendTemplateHtmlMail(formSettingSchema.getNewWriteNotifyEmail(), "新回复通知", "mail/form-write-notify", MapUtil.of("projectName", form.getName()));
+            MailService.sendTemplateHtmlMail(formSettingSchema.getNewWriteNotifyEmail(), "新回复通知",
+                    "mail/form-write-notify", MapUtil.of("projectName", form.getName()));
         }
 
         if (StrUtil.isNotBlank(formSettingSchema.getNewWriteNotifyWx())) {

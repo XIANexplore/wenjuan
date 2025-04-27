@@ -30,6 +30,11 @@ export default [
     component: () => import(/* webpackChunkName: 'root' */ '@/views/account/login/index')
   },
   {
+    path: '/square',
+    meta: { requireLogin: false },
+    component: () => import(/* webpackChunkName: 'root' */ '@/views/project/square/index')
+  },
+  {
     path: '/home',
     meta: { requireLogin: true },
     component: () => import(/* webpackChunkName: 'root' */ '@/views/home'),
