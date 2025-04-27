@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>测试图片上传</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="file"] {
+            display: block;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            min-height: 100px;
+        }
+        img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>测试图片上传</h1>
+    
+    <div class="form-group">
+        <label for="file">选择图片：</label>
+        <input type="file" id="file" accept="image/*">
+    </div>
+    
+    <button onclick="uploadImage()">上传图片</button>
+    
+    <div id="result">
+        <p>上传结果将显示在这里...</p>
+    </div>
+    
+    <script>
+        function uploadImage() {
+            const fileInput = document.getElementById('file');
+            const resultDiv = document.getElementById('result');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                resultDiv.innerHTML = '<p style="color: red;">请先选择一个图片文件</p>';
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            resultDiv.innerHTML = '<p>正在上传...</p>';
+            
+            fetch('http://localhost:8999/common/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    resultDiv.innerHTML = `
+                        <p style="color: green;">上传成功！</p>
+                        <p>图片URL: ${data.data}</p>
+                        <img src="${data.data}" alt="上传的图片">
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">上传失败: ${data.msg}</p>`;
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `<p style="color: red;">上传出错: ${error.message}</p>`;
+            });
+        }
+    </script>
+</body>
+</html>

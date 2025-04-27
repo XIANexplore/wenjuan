@@ -3,6 +3,7 @@ package com.tduck.cloud.api.web.controller;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.CharUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.tduck.cloud.common.util.Result;
 import com.tduck.cloud.storage.cloud.OssStorageFactory;
@@ -30,27 +31,50 @@ public class UploadFileController {
     /**
      * 上传用户文件
      * <p>
-     * 用户Id MD5加密 同一个用户的文件放在一个目录下
+     * 根据文件类型区分存储路径，不再每次创建日期文件夹
      *
-     * @param file
-     * @param userId
-     * @return
-     * @throws IOException
+     * @param file     文件
+     * @param fileType 文件类型限制
+     * @param type     业务类型（avatar: 头像, cover: 封面图）
+     * @param userId   用户ID
+     * @return 文件URL
+     * @throws IOException IO异常
      */
     @PostMapping("/user/file/upload")
     public Result<String> uploadUserFile(@RequestParam("file") MultipartFile file,
             @RequestParam(value = "fileType", required = false, defaultValue = "DEFAULT") String fileType,
+            @RequestParam(value = "type", required = false) String type,
             @RequestAttribute Long userId) throws IOException {
         try {
-            log.info("开始上传用户文件, 用户ID: {}, 文件名: {}, 文件类型: {}",
-                    userId, file.getOriginalFilename(), fileType);
+            log.info("开始上传用户文件, 用户ID: {}, 文件名: {}, 文件类型: {}, 业务类型: {}",
+                    userId, file.getOriginalFilename(), fileType, type);
 
             // 构建文件路径
-            String path = SecureUtil.md5(String.valueOf(userId)) +
-                    CharUtil.SLASH +
-                    IdUtil.simpleUUID() +
-                    CharUtil.DOT +
-                    FileUtil.extName(file.getOriginalFilename());
+            String path;
+
+            // 根据业务类型区分存储路径
+            if ("avatar".equals(type)) {
+                // 头像存储在 avatar 目录下
+                path = "avatar" +
+                        CharUtil.SLASH +
+                        IdUtil.simpleUUID() +
+                        CharUtil.DOT +
+                        FileUtil.extName(file.getOriginalFilename());
+            } else if ("cover".equals(type)) {
+                // 封面图存储在 cover 目录下
+                path = "cover" +
+                        CharUtil.SLASH +
+                        IdUtil.simpleUUID() +
+                        CharUtil.DOT +
+                        FileUtil.extName(file.getOriginalFilename());
+            } else {
+                // 其他文件按用户ID分组存储
+                path = SecureUtil.md5(String.valueOf(userId)) +
+                        CharUtil.SLASH +
+                        IdUtil.simpleUUID() +
+                        CharUtil.DOT +
+                        FileUtil.extName(file.getOriginalFilename());
+            }
 
             log.info("文件存储路径: {}", path);
 
@@ -71,8 +95,10 @@ public class UploadFileController {
     /**
      * 表单文件上传
      *
-     * @param file    文件
-     * @param formKey 表单key
+     * @param file     文件
+     * @param fileType 文件类型限制
+     * @param type     业务类型（可选）
+     * @param formKey  表单key
      * @return 文件地址
      * @throws IOException IO异常
      */
@@ -80,17 +106,38 @@ public class UploadFileController {
     @PermitAll
     public Result<String> uploadFormFile(@RequestParam("file") MultipartFile file,
             @RequestParam(value = "fileType", required = false, defaultValue = "DEFAULT") String fileType,
+            @RequestParam(value = "type", required = false) String type,
             @PathVariable("formKey") String formKey) throws IOException {
         try {
-            log.info("开始上传表单文件, 表单Key: {}, 文件名: {}, 文件类型: {}",
-                    formKey, file.getOriginalFilename(), fileType);
+            log.info("开始上传表单文件, 表单Key: {}, 文件名: {}, 文件类型: {}, 业务类型: {}",
+                    formKey, file.getOriginalFilename(), fileType, type);
 
             // 构建文件路径
-            String path = SecureUtil.md5(formKey) +
-                    CharUtil.SLASH +
-                    IdUtil.simpleUUID() +
-                    CharUtil.DOT +
-                    FileUtil.extName(file.getOriginalFilename());
+            String path;
+
+            // 根据业务类型区分存储路径
+            if ("avatar".equals(type)) {
+                // 头像存储在 avatar 目录下
+                path = "avatar" +
+                        CharUtil.SLASH +
+                        IdUtil.simpleUUID() +
+                        CharUtil.DOT +
+                        FileUtil.extName(file.getOriginalFilename());
+            } else if ("cover".equals(type)) {
+                // 封面图存储在 cover 目录下
+                path = "cover" +
+                        CharUtil.SLASH +
+                        IdUtil.simpleUUID() +
+                        CharUtil.DOT +
+                        FileUtil.extName(file.getOriginalFilename());
+            } else {
+                // 其他表单文件按表单ID分组存储
+                path = SecureUtil.md5(formKey) +
+                        CharUtil.SLASH +
+                        IdUtil.simpleUUID() +
+                        CharUtil.DOT +
+                        FileUtil.extName(file.getOriginalFilename());
+            }
 
             log.info("表单文件存储路径: {}", path);
 

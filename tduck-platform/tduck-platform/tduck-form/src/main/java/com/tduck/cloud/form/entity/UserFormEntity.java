@@ -29,18 +29,17 @@ public class UserFormEntity extends BaseEntity<UserFormEntity> {
     /**
      * 表单code
      */
-    @NotBlank(message = "错误请求", groups = {UpdateGroup.class})
+    @NotBlank(message = "错误请求", groups = { UpdateGroup.class })
     private String formKey;
     /**
      * 表单名称
      */
-    @NotBlank(message = "表单名称不能为空", groups = {AddGroup.class, UpdateGroup.class})
+    @NotBlank(message = "表单名称不能为空", groups = { AddGroup.class, UpdateGroup.class })
     private String name;
     /**
      * 表单描述
      */
     private String description;
-
 
     /**
      * 表单来源
@@ -79,9 +78,15 @@ public class UserFormEntity extends BaseEntity<UserFormEntity> {
      */
     private Long folderId;
 
+    /**
+     * 创建者用户名（非数据库字段）
+     */
+    @TableField(exist = false)
+    private String userName;
 
     /**
      * 移除html标签
+     * 
      * @return 文本
      */
     public String getTextName() {

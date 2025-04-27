@@ -31,6 +31,7 @@ import com.tduck.cloud.form.vo.FormFieldVO;
 import com.tduck.cloud.form.vo.OperateFormItemVO;
 import com.tduck.cloud.form.vo.RecycleFormVO;
 import com.tduck.cloud.form.vo.UserFormDetailVO;
+import com.tduck.cloud.account.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +63,7 @@ public class UserFormController {
     private final UserFormSettingService userFormSettingService;
     private final FormTemplateService formTemplateService;
     private final UserFormLogicService userFormLogicService;
+    private final UserService userService;
 
     /**
      * 创建表单
@@ -489,6 +491,20 @@ public class UserFormController {
                         .eq(UserFormEntity::getStatus, FormStatusEnum.RELEASE)
                         .eq(UserFormEntity::getDeleted, 0)
                         .orderByDesc(BaseEntity::getCreateTime));
+
+        // 获取用户信息并添加到表单数据中
+        if (page.getRecords() != null && !page.getRecords().isEmpty()) {
+            for (UserFormEntity form : page.getRecords()) {
+                if (form.getUserId() != null) {
+                    // 这里可以通过用户ID获取用户信息，然后设置到表单实体中
+                    // 由于UserFormEntity中没有直接存储用户名的字段，我们可以使用TransientField
+                    form.setUserName(userService.getById(form.getUserId()) != null
+                            ? userService.getById(form.getUserId()).getName()
+                            : "未知用户");
+                }
+            }
+        }
+
         return Result.success(page);
     }
 

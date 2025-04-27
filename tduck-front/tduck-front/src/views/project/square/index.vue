@@ -13,7 +13,7 @@
 
     <div class="header">
       <h2>问卷广场</h2>
-      <p>这里展示了所有可以回答的问卷，选择一个开始填写吧！</p>
+      <p>这里展示了所有正在收集中的问卷，选择一个开始填写吧！</p>
     </div>
 
     <div v-if="loading" class="loading-container">
@@ -29,6 +29,16 @@
         <el-card class="form-card" shadow="hover">
           <div class="form-title">{{ form.textName || form.name }}</div>
           <div class="form-desc">{{ form.description || '暂无描述' }}</div>
+          <div class="form-meta">
+            <div class="meta-item">
+              <i class="el-icon-user"></i>
+              <span>发布人: {{ form.userName || '未知用户' }}</span>
+            </div>
+            <div class="meta-item">
+              <i class="el-icon-time"></i>
+              <span>创建时间: {{ formatDate(form.createTime) }}</span>
+            </div>
+          </div>
           <div class="form-footer">
             <el-button type="primary" size="small" @click="goToWriteForm(form.formKey)">开始填写</el-button>
           </div>
@@ -73,6 +83,16 @@ export default {
     checkLoginStatus() {
       const token = Cookies.get('token')
       this.isLoggedIn = !!token
+    },
+    formatDate(dateString) {
+      if (!dateString) return '未知时间'
+      const date = new Date(dateString)
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      return `${year}-${month}-${day} ${hours}:${minutes}`
     },
     fetchFormList() {
       this.loading = true
@@ -169,7 +189,7 @@ export default {
   }
 
   .form-card {
-    height: 180px;
+    height: 220px;
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
@@ -191,8 +211,30 @@ export default {
       overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+    }
+
+    .form-meta {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #909399;
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+
+        i {
+          margin-right: 5px;
+        }
+
+        span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
     }
 
     .form-footer {

@@ -10,6 +10,7 @@
           :show-file-list="false"
           :on-success="handleCoverSuccess"
           :before-upload="beforeCoverUpload"
+          :data="{ type: 'cover' }"
         >
           <img v-if="form.coverImg" :src="form.coverImg" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
