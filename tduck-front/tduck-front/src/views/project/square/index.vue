@@ -27,7 +27,7 @@
     <el-row :gutter="20" v-else>
       <el-col v-for="form in formList" :key="form.id" :xs="24" :sm="12" :md="8" :lg="6">
         <el-card class="form-card" shadow="hover">
-          <div class="form-title">{{ form.name }}</div>
+          <div class="form-title">{{ form.textName || form.name }}</div>
           <div class="form-desc">{{ form.description || '暂无描述' }}</div>
           <div class="form-footer">
             <el-button type="primary" size="small" @click="goToWriteForm(form.formKey)">开始填写</el-button>
@@ -81,7 +81,7 @@ export default {
         size: this.pageSize
       })
         .then((res) => {
-          if (res.success) {
+          if (res.code === 200) {
             this.formList = res.data.records || []
             this.total = res.data.total || 0
           } else {

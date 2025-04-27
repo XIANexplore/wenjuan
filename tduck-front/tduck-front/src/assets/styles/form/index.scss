@@ -1,4 +1,4 @@
-@import '../resources/variables';
+@use '../resources/variables' as *;
 $editorTabsborderColor: #121315;
 body,
 html {
@@ -32,6 +32,7 @@ textarea {
     border-left: 1px solid $editorTabsborderColor !important;
     background: #363636;
     margin-right: 5px;
+    -webkit-user-select: none;
     user-select: none;
   }
   .el-tabs__item.is-active {

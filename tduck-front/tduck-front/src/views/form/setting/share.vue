@@ -142,7 +142,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'settting';
+@use 'settting' as *;
 
 .share-img {
   width: 123px;

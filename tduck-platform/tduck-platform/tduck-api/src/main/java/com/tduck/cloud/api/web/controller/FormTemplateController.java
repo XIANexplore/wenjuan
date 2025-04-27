@@ -18,13 +18,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-
 /**
  * 表单模板
  *
  * @author : smalljop
  * @description : 表单模板接口
- * @create :  2021/01/06 10:54
+ * @create : 2021/01/06 10:54
  **/
 @Slf4j
 @RestController
@@ -46,7 +45,8 @@ public class FormTemplateController {
      */
     @PostMapping("/form/template/delete")
     public Result deleteFormTemplate(@RequestBody FormTemplateEntity templateEntity) {
-        formTemplateService.remove(Wrappers.<FormTemplateEntity>lambdaQuery().eq(FormTemplateEntity::getFormKey, templateEntity.getFormKey()));
+        formTemplateService.remove(Wrappers.<FormTemplateEntity>lambdaQuery().eq(FormTemplateEntity::getFormKey,
+                templateEntity.getFormKey()));
         return Result.success(templateEntity.getFormKey());
     }
 
@@ -71,11 +71,12 @@ public class FormTemplateController {
         return Result.success(
                 formTemplateService.page(request.toMybatisPage(),
                         Wrappers.<FormTemplateEntity>lambdaQuery()
-                                .eq(ObjectUtil.isNotNull(request.getType()), FormTemplateEntity::getCategoryId, request.getType())
-                                .like(StrUtil.isNotBlank(request.getName()), FormTemplateEntity::getName, request.getName())
+                                .eq(ObjectUtil.isNotNull(request.getType()), FormTemplateEntity::getCategoryId,
+                                        request.getType())
+                                .like(StrUtil.isNotBlank(request.getName()), FormTemplateEntity::getName,
+                                        request.getName())
                                 .orderByDesc(FormTemplateEntity::getCreateTime)));
     }
-
 
     /**
      * 表单另存为为模板
@@ -84,7 +85,8 @@ public class FormTemplateController {
      * @return
      */
     @PostMapping("/form/template/create")
-    public Result createFormTemplate(@RequestBody FormTemplateEntity formTemplateEntity, @RequestAttribute Long userId) {
+    public Result createFormTemplate(@RequestBody FormTemplateEntity formTemplateEntity,
+            @RequestAttribute Long userId) {
         FormTemplateEntity formTemplate = formTemplateService.createFormTemplate(formTemplateEntity);
         return Result.success(formTemplate.getFormKey());
     }
@@ -102,13 +104,13 @@ public class FormTemplateController {
         return Result.success(templateEntity.getScheme());
     }
 
-
     /**
      * 查询项目模板分类列表
      */
     @GetMapping("/form/template/category/page")
     public Result queryCategoryPage(Page page, FormTemplateCategoryEntity fmFormTemplateCategory) {
-        return Result.success(formTemplateCategoryService.page(page, QueryWrapperUtils.toSimpleQuery(fmFormTemplateCategory)));
+        return Result.success(
+                formTemplateCategoryService.page(page, QueryWrapperUtils.toSimpleQuery(fmFormTemplateCategory)));
     }
 
     /**
@@ -141,6 +143,19 @@ public class FormTemplateController {
     @DeleteMapping("/form/template/category/{ids}")
     public Result deleteCategory(@PathVariable List<Long> ids) {
         return Result.success(formTemplateCategoryService.removeByIds(ids));
+    }
+
+    /**
+     * 查询项目模板详情
+     * 包含项目信息 项目保单项信息
+     *
+     * @param formKey 项目key
+     * @return
+     */
+    @GetMapping("/form/template/detail")
+    public Result queryFormTemplateDetail(@RequestParam @NotBlank String formKey) {
+        FormTemplateEntity templateEntity = formTemplateService.getByKey(formKey);
+        return Result.success(templateEntity);
     }
 
 }

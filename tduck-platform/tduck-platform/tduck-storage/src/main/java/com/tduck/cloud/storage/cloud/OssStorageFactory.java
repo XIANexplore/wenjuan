@@ -60,7 +60,7 @@ public final class OssStorageFactory {
                 // 本地存储默认配置
                 if (StrUtil.isBlank(config.getUploadFolder())) {
                     ApplicationHome ah = new ApplicationHome(OssStorageFactory.class);
-                    String uploadPath = ah.getDir().getAbsolutePath() + "/upload";
+                    String uploadPath = ah.getDir().getAbsolutePath() + "/images";
                     config.setUploadFolder(uploadPath);
                     log.info("设置默认上传路径: {}", uploadPath);
                 } else {
@@ -84,7 +84,7 @@ public final class OssStorageFactory {
 
                 if (StrUtil.isBlank(config.getDomain())) {
                     String domain = ServletUtils.getDomain(ServletUtils.getRequest());
-                    config.setDomain(domain + "/u");
+                    config.setDomain(domain + "/images");
                     log.info("设置默认域名: {}", config.getDomain());
                 }
                 storageService = new LocalStorageService(config);

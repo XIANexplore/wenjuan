@@ -374,7 +374,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'settting';
+@use 'settting' as *;
 
 .checkbox-group .el-checkbox {
   margin-right: 23px;

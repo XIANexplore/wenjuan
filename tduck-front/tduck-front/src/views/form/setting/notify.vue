@@ -158,7 +158,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'settting';
+@use 'settting' as *;
 
 .sub-label-text {
   text-align: left;

@@ -9,6 +9,7 @@ import TduckForm from 'tduck-form-generator'
 import { getCurrentDomain } from '@/utils'
 
 export default {
+  name: 'App',
   provide() {
     return {
       reload: this.reload

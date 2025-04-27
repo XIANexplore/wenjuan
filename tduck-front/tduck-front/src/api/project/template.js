@@ -16,7 +16,7 @@ export const getFormTemplatePageRequest = (params) => getRequest('/form/template
 export const useTemplateCreateFormRequest = (data) => postRequest('/user/form/use-template/create', data)
 
 // 获取模板详情
-export const getFormTemplateDetailRequest = (params) => getRequest('/form/template/detail', params)
+export const getFormTemplateDetailRequest = (params) => getRequest(`/form/template/details/${params.formKey}`)
 
 // 查询项目模板分类列表
 export const listCategory = (params) => getRequest('/form/template/category/page', params)

@@ -61,7 +61,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
             // 未配置路径时 使用jar所在目录作为文件默认存储目录
             if (StrUtil.isBlank(uploadFolder)) {
                 ApplicationHome ah = new ApplicationHome(OssStorageFactory.class);
-                uploadFolder = ah.getDir().getAbsolutePath() + "/upload";
+                uploadFolder = ah.getDir().getAbsolutePath() + "/images";
                 log.info("未配置上传路径，使用默认路径: {}", uploadFolder);
             } else {
                 log.info("使用配置的上传路径: {}", uploadFolder);

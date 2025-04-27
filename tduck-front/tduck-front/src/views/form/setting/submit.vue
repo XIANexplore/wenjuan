@@ -102,7 +102,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'settting';
+@use 'settting' as *;
 
 .submit-prompt-img {
   width: 100%;

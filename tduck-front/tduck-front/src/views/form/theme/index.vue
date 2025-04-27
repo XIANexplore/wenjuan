@@ -239,7 +239,7 @@ import { listCategory } from '../../../api/project/theme'
 import { getToken } from '../../../utils/auth'
 
 export default {
-  name: 'Theme',
+  name: 'ThemeEditor',
   components: {
     PreView
   },

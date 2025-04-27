@@ -11,7 +11,7 @@
  Target Server Version : 80400
  File Encoding         : 65001
 
- Date: 07/04/2025 21:43:22
+ Date: 27/04/2025 23:52:49
 */
 
 SET NAMES utf8mb4;
@@ -38,13 +38,13 @@ CREATE TABLE `ac_user`  (
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 15672 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 15676 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ac_user
 -- ----------------------------
 INSERT INTO `ac_user` VALUES (1, 'admin', 'http://localhost:8999/u/c4ca4238a0b923820dcc509a6f75849b/4db100f1b994494ca5093439f269bfad.png', 1, '1234@qq.com', NULL, '$2a$10$FgOTdkh3qVLE9DNgD4XzDu2PCJB3QtnGbriBPaMhMKTVWM9XYsiIm', '1', 2, '2025-04-07 21:37:52', '127.0.0.1', 1, 0, '2021-06-13 13:49:25', '2025-04-07 21:37:52');
-INSERT INTO `ac_user` VALUES (15672, '环书南', 'https://s1.locimg.com/2023/05/16/17db376b12ec4.png', 0, '21323123@qq.com', NULL, '$2a$10$f3gwUVHNt/WpTq6NDH//KuR5KJAP9QPK5Bb/0UOKqDy6wVBsIr2FC', '2', NULL, NULL, NULL, 1, 0, '2025-04-07 04:50:35', '2025-04-07 04:50:35');
+INSERT INTO `ac_user` VALUES (15672, '环书南', 'https://s1.locimg.com/2023/05/16/17db376b12ec4.png', 0, '21323123@qq.com', NULL, '$2a$10$f3gwUVHNt/WpTq6NDH//KuR5KJAP9QPK5Bb/0UOKqDy6wVBsIr2FC', '2', 2, '2025-04-27 22:36:26', '127.0.0.1', 1, 0, '2025-04-07 04:50:35', '2025-04-27 22:36:26');
 INSERT INTO `ac_user` VALUES (15673, '硕成天', 'https://s1.locimg.com/2023/05/16/17db376b12ec4.png', 0, '123987@qq.com', NULL, '$2a$10$lMYn/v1qolm78muDq4Y4mOCCnbqtAo2LFPKuBBir91f.L5V5LroE6', '2', NULL, NULL, NULL, 1, 0, '2025-04-07 04:51:54', '2025-04-07 04:51:54');
 INSERT INTO `ac_user` VALUES (15674, '郸俊杰', 'https://s1.locimg.com/2023/05/16/17db376b12ec4.png', 0, '12345@qq.com', NULL, '$2a$10$l/dCVy1LHP.HeG3vaWPtQ.ul/ClqR4eshUSMgnK40idmLskLfqSW6', '2', 2, '2025-04-07 04:52:46', '127.0.0.1', 1, 0, '2025-04-07 04:52:27', '2025-04-07 04:52:46');
 INSERT INTO `ac_user` VALUES (15675, '慕容半双', 'https://s1.locimg.com/2023/05/16/17db376b12ec4.png', 0, '123@qq.com', NULL, '$2a$10$qXxyLFJHcBWhwqe75gVuoOYspQGtTXW9AtnEGlZmVu61bDheSWtDe', '2', 2, '2025-04-07 18:42:53', '127.0.0.1', 1, 0, '2025-04-07 05:32:48', '2025-04-07 18:42:53');
@@ -85,7 +85,7 @@ CREATE TABLE `ac_user_token`  (
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `token`(`token`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 41 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ac_user_token
@@ -105,6 +105,7 @@ INSERT INTO `ac_user_token` VALUES (37, 0, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxM
 INSERT INTO `ac_user_token` VALUES (38, 0, 15675, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTY3NSIsImlhdCI6MTc0NDAyMjU3MiwiZXhwIjoxNzQ0NjI3MzcyfQ.iuzxO5zFW7_upJ0GCPbNiPDkb-3qrtxgk2M5LC-B_HtHBH9m9Q43T06HsU13Cu3scMGAJJkL6Apb0whS02cFtw', '2025-04-14 18:42:53', '2025-04-07 18:42:53', '2025-04-07 18:42:53');
 INSERT INTO `ac_user_token` VALUES (39, 0, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ0MDIzMTI5LCJleHAiOjE3NDQ2Mjc5Mjl9.qxWpa4_C4PclhDh2-fBS58HeKccenm9V_HuuQXFaL4r1C1jmGGrWmG8MYXqysIc-KW6lyccwpTcAh-mwT6Heiw', '2025-04-14 18:52:09', '2025-04-07 18:52:09', '2025-04-07 18:52:09');
 INSERT INTO `ac_user_token` VALUES (40, 0, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ0MDMzMDcxLCJleHAiOjE3NDQ2Mzc4NzF9.hJaf_uhkMNXpTtx7N1cUiUO0w00ljMwsQyoFk7D-PZvgzUlHA4BIZHc-6A_rc8rz6sjjt252I_2spMuZpdDRnw', '2025-04-14 21:37:52', '2025-04-07 21:37:52', '2025-04-07 21:37:52');
+INSERT INTO `ac_user_token` VALUES (41, 0, 15672, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTY3MiIsImlhdCI6MTc0NTc2NDU4NiwiZXhwIjoxNzQ2MzY5Mzg2fQ.VuQeiwPixd_PQMnv9936Uget_1ImlmOK8XeCNvT3eYDOmLtx8wYJhM05WYW2aXk5XwtGOCHpHwMp1WU8LppTNw', '2025-05-04 22:36:26', '2025-04-27 22:36:26', '2025-04-27 22:36:26');
 
 -- ----------------------------
 -- Table structure for fm_form_template
@@ -122,7 +123,7 @@ CREATE TABLE `fm_form_template`  (
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3613 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '表单模板' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3615 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '表单模板' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fm_form_template
@@ -140,7 +141,7 @@ CREATE TABLE `fm_form_template_category`  (
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 53 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '项目模板分类' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 55 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '项目模板分类' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fm_form_template_category
@@ -162,7 +163,7 @@ CREATE TABLE `fm_form_theme`  (
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 236 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '项目主题外观模板' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 237 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '项目主题外观模板' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fm_form_theme
@@ -180,7 +181,7 @@ CREATE TABLE `fm_form_theme_category`  (
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '表单主题分类' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '表单主题分类' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fm_form_theme_category
@@ -208,7 +209,7 @@ CREATE TABLE `fm_user_form`  (
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `code`(`form_key`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8467 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户表单' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 8472 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户表单' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fm_user_form
@@ -258,25 +259,27 @@ CREATE TABLE `fm_user_form_data`  (
   `wx_open_id` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '微信openId',
   `wx_user_info` json NULL COMMENT '微信用户信息',
   `ext_value` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '扩展字段记录来源等',
+  `user_name` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '填写人姓名',
+  `user_email` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '填写人邮箱',
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `create_by` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '创建人',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `update_by` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '更新人',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `project_key`(`form_key`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 211738 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '表单收集数据结果' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 211746 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '表单收集数据结果' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fm_user_form_data
 -- ----------------------------
-INSERT INTO `fm_user_form_data` VALUES (211738, 'letdJG4N', 1, '{\"rate1743973397142\": 5, \"number1743973394500\": 4}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 5436, NULL, '{}', NULL, '2025-04-07 05:03:37', NULL, '2025-04-07 05:03:37', NULL);
-INSERT INTO `fm_user_form_data` VALUES (211739, 'letdJG4N', 2, '{\"rate1743973397142\": 5, \"number1743973394500\": 3}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"134.0.0.0\"}, \"browser\": {\"name\": \"Chrome\", \"major\": \"134\", \"version\": \"134.0.0.0\"}}', 'Windows', 'Chrome', '127.0.0.1', '内网IP', 5261, NULL, '{}', NULL, '2025-04-07 05:06:17', NULL, '2025-04-07 05:06:17', NULL);
-INSERT INTO `fm_user_form_data` VALUES (211740, 'letdJG4N', 3, '{\"radio1743973645013\": 4, \"select1743973633463\": 2, \"radio1743973645013label\": \"4\", \"select1743973633463label\": \"选项二\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 5945, NULL, '{}', NULL, '2025-04-07 05:12:08', NULL, '2025-04-07 05:12:08', NULL);
-INSERT INTO `fm_user_form_data` VALUES (211741, 'letdJG4N', 4, '{\"radio1743973645013\": 1, \"select1743973633463\": 1, \"radio1743973645013label\": \"选项一\", \"select1743973633463label\": \"选项一\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 5160, NULL, '{}', NULL, '2025-04-07 05:12:45', NULL, '2025-04-07 05:12:45', NULL);
-INSERT INTO `fm_user_form_data` VALUES (211742, 'letdJG4N', 5, '{\"radio1743973645013\": 1, \"select1743973633463\": 1, \"radio1743973645013label\": \"A.苹果\", \"select1743973633463label\": \"选项一\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 6819, NULL, '{}', NULL, '2025-04-07 06:10:19', NULL, '2025-04-07 06:10:19', NULL);
-INSERT INTO `fm_user_form_data` VALUES (211743, 'letdJG4N', 1, '{\"rate1743978167748\": 5, \"radio1743973645013\": 1, \"select1743973633463\": 3, \"slider1743978170396\": 43, \"cascader1743978172133\": [1, 2], \"checkbox1743978171178\": [1], \"radio1743973645013label\": \"A.苹果\", \"select1743973633463label\": \"3\", \"image_select1743978169717\": 1, \"image_upload1743978168941\": [{\"url\": \"http://localhost:8999/u/004e2d139dd9b29e7d0aab17d233585f/dbcdcceed3934cf88002c73aafe61d30.jpg\", \"name\": \"c74addb8-89e2-4f83-91eb-40b5cda9f74e.jpg\"}], \"cascader1743978172133label\": [\"选项1\", \"选项1-1\"], \"checkbox1743978171178label\": [\"选项一\"], \"image_select1743978169717label\": \"选项一\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 16254, NULL, '{}', NULL, '2025-04-07 16:19:51', NULL, '2025-04-07 16:19:51', NULL);
-INSERT INTO `fm_user_form_data` VALUES (211744, 'r5CJnD52', 1, '{\"radio1744015504752\": 1, \"radio1744015504752label\": \"选项一\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 2872, NULL, '{}', NULL, '2025-04-07 16:45:44', NULL, '2025-04-07 16:45:44', NULL);
-INSERT INTO `fm_user_form_data` VALUES (211745, 'uPdz9qqx', 1, '{\"input1744031287399\": \"12323123\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 4968, NULL, '{}', NULL, '2025-04-07 21:41:19', NULL, '2025-04-07 21:41:19', NULL);
+INSERT INTO `fm_user_form_data` VALUES (211738, 'letdJG4N', 1, '{\"rate1743973397142\": 5, \"number1743973394500\": 4}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 5436, NULL, '{}', NULL, NULL, NULL, '2025-04-07 05:03:37', NULL, '2025-04-07 05:03:37', NULL);
+INSERT INTO `fm_user_form_data` VALUES (211739, 'letdJG4N', 2, '{\"rate1743973397142\": 5, \"number1743973394500\": 3}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"134.0.0.0\"}, \"browser\": {\"name\": \"Chrome\", \"major\": \"134\", \"version\": \"134.0.0.0\"}}', 'Windows', 'Chrome', '127.0.0.1', '内网IP', 5261, NULL, '{}', NULL, NULL, NULL, '2025-04-07 05:06:17', NULL, '2025-04-07 05:06:17', NULL);
+INSERT INTO `fm_user_form_data` VALUES (211740, 'letdJG4N', 3, '{\"radio1743973645013\": 4, \"select1743973633463\": 2, \"radio1743973645013label\": \"4\", \"select1743973633463label\": \"选项二\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 5945, NULL, '{}', NULL, NULL, NULL, '2025-04-07 05:12:08', NULL, '2025-04-07 05:12:08', NULL);
+INSERT INTO `fm_user_form_data` VALUES (211741, 'letdJG4N', 4, '{\"radio1743973645013\": 1, \"select1743973633463\": 1, \"radio1743973645013label\": \"选项一\", \"select1743973633463label\": \"选项一\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 5160, NULL, '{}', NULL, NULL, NULL, '2025-04-07 05:12:45', NULL, '2025-04-07 05:12:45', NULL);
+INSERT INTO `fm_user_form_data` VALUES (211742, 'letdJG4N', 5, '{\"radio1743973645013\": 1, \"select1743973633463\": 1, \"radio1743973645013label\": \"A.苹果\", \"select1743973633463label\": \"选项一\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 6819, NULL, '{}', NULL, NULL, NULL, '2025-04-07 06:10:19', NULL, '2025-04-07 06:10:19', NULL);
+INSERT INTO `fm_user_form_data` VALUES (211743, 'letdJG4N', 1, '{\"rate1743978167748\": 5, \"radio1743973645013\": 1, \"select1743973633463\": 3, \"slider1743978170396\": 43, \"cascader1743978172133\": [1, 2], \"checkbox1743978171178\": [1], \"radio1743973645013label\": \"A.苹果\", \"select1743973633463label\": \"3\", \"image_select1743978169717\": 1, \"image_upload1743978168941\": [{\"url\": \"http://localhost:8999/u/004e2d139dd9b29e7d0aab17d233585f/dbcdcceed3934cf88002c73aafe61d30.jpg\", \"name\": \"c74addb8-89e2-4f83-91eb-40b5cda9f74e.jpg\"}], \"cascader1743978172133label\": [\"选项1\", \"选项1-1\"], \"checkbox1743978171178label\": [\"选项一\"], \"image_select1743978169717label\": \"选项一\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 16254, NULL, '{}', NULL, NULL, NULL, '2025-04-07 16:19:51', NULL, '2025-04-07 16:19:51', NULL);
+INSERT INTO `fm_user_form_data` VALUES (211744, 'r5CJnD52', 1, '{\"radio1744015504752\": 1, \"radio1744015504752label\": \"选项一\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 2872, NULL, '{}', NULL, NULL, NULL, '2025-04-07 16:45:44', NULL, '2025-04-07 16:45:44', NULL);
+INSERT INTO `fm_user_form_data` VALUES (211745, 'uPdz9qqx', 1, '{\"input1744031287399\": \"12323123\"}', '{\"os\": {\"name\": \"Windows\", \"version\": \"10\"}, \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0\", \"cpu\": {\"architecture\": \"amd64\"}, \"device\": {}, \"engine\": {\"name\": \"Blink\", \"version\": \"135.0.0.0\"}, \"browser\": {\"name\": \"Edge\", \"major\": \"135\", \"version\": \"135.0.0.0\"}}', 'Windows', 'Edge', '127.0.0.1', '内网IP', 4968, NULL, '{}', NULL, NULL, NULL, '2025-04-07 21:41:19', NULL, '2025-04-07 21:41:19', NULL);
 
 -- ----------------------------
 -- Table structure for fm_user_form_item
@@ -303,7 +306,7 @@ CREATE TABLE `fm_user_form_item`  (
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `project_key`(`form_key`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 59044 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '表单项' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 59063 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '表单项' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fm_user_form_item
@@ -336,7 +339,7 @@ CREATE TABLE `fm_user_form_logic`  (
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `project_key`(`form_key`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1707 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '项目逻辑' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1708 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '项目逻辑' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fm_user_form_logic
@@ -401,7 +404,7 @@ CREATE TABLE `fm_user_form_view_count`  (
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `form_key`(`form_key`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户表单查看次数' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户表单查看次数' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fm_user_form_view_count

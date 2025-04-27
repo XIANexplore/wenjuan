@@ -111,7 +111,7 @@ import constants from '@/utils/constants'
 import Register from '../register/index.vue'
 
 export default {
-  name: 'Login',
+  name: 'LoginPage',
   components: {
     Register
   },

@@ -1,4 +1,4 @@
-@import '../resources/element-variables';
+@use '../resources/element-variables' as *;
 @mixin action-bar {
   .action-bar {
     height: 33px;
@@ -12,6 +12,7 @@
       color: $--color-primary;
       cursor: pointer;
       font-size: 14px;
+      -webkit-user-select: none;
       user-select: none;
       & i {
         font-size: 20px;
