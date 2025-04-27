@@ -59,7 +59,14 @@ export default [
   {
     path: '/s/:key',
     meta: { requireLogin: false },
-    component: () => import(/* webpackChunkName: 'root' */ '@/views/form/write')
+    component: () => import(/* webpackChunkName: 'root' */ '@/views/form/write'),
+    props: (route) => ({ isShared: true })
+  },
+  {
+    path: '/form/:key',
+    meta: { requireLogin: true },
+    component: () => import(/* webpackChunkName: 'root' */ '@/views/form/write'),
+    props: (route) => ({ isShared: false })
   },
   {
     path: '/project/write',

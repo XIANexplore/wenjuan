@@ -1,6 +1,9 @@
 import request from '@/api/index'
 import { getRequest, postRequest } from '../baseRequest'
 
+// 检查用户是否已回答过问卷
+export const checkUserAnsweredRequest = (formKey) => getRequest(`/user/form/data/check-answered/${formKey}`)
+
 // 查看表单
 export const viewFormResultRequest = (formKey) => getRequest(`/user/form/data/view/${formKey}`)
 // 保存表单结果数据

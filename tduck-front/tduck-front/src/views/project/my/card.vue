@@ -1,7 +1,61 @@
 <template>
   <div class="project-card-container">
+    <!-- 分享弹窗 -->
+    <el-dialog
+      title="分享问卷"
+      :visible.sync="shareDialogVisible"
+      width="600px"
+      :before-close="closeShareDialog"
+      center
+    >
+      <div class="share-dialog-content">
+        <el-row :gutter="10" align="middle" type="flex">
+          <el-col :span="12">
+            <div>
+              <vue-qr v-if="shareLink" :callback="qrCodeGenSuccess" :size="194" :text="shareLink" />
+            </div>
+            <div style="text-align: center; margin-top: 10px">
+              <el-link type="primary" @click="downloadQrCode"> 下载分享二维码 </el-link>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div style="display: flex; justify-content: center">
+              <div class="icon-view">
+                <i class="el-icon-check success-icon" />
+              </div>
+            </div>
+            <div>
+              <p class="success-title">恭喜您，发布成功！</p>
+            </div>
+            <div>
+              <p class="link-text">{{ shareLink }}</p>
+            </div>
+            <el-row>
+              <el-col :span="12" :offset="6">
+                <el-button
+                  v-clipboard:copy="shareLink"
+                  v-clipboard:error="
+                    () => {
+                      this.msgError('复制失败')
+                    }
+                  "
+                  v-clipboard:success="
+                    () => {
+                      this.msgSuccess('复制成功')
+                    }
+                  "
+                  type="primary"
+                >
+                  复制链接
+                </el-button>
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+      </div>
+    </el-dialog>
     <el-row v-if="projectList.length" :gutter="30">
-      <el-col v-for="p in projectList" :key="p.id" :span="4.5">
+      <el-col v-for="p in projectList" :key="p.id" :span="6">
         <el-card :key="p.id" :body-style="{ padding: '0px', position: 'static' }" class="move">
           <div class="body">
             <el-row align="middle" justify="center" type="flex">
@@ -30,13 +84,23 @@
 
           <div class="btns">
             <div class="split-line" />
-            <el-button type="text" @click="toProjectHandle(p, 'editor')"> 编辑表单 </el-button>
-            <el-button type="text" @click="toProjectHandle(p, 'data')"> 数据 </el-button>
-            <el-button v-if="p.status == 2" type="text" @click.native="stopProject(p.formKey)"> 停止 </el-button>
-            <el-button v-if="p.status != 2" type="text" class="delete-text" @click="deleteFrom(p.formKey)">
-              删除
-            </el-button>
-            <el-button type="text" @click.native="toProjectHandle(p, 'statistics')"> 统计 </el-button>
+            <!-- 第一行按钮 - 功能按钮 -->
+            <div class="btn-row action-btn-row">
+              <el-button type="primary" size="mini" @click="toProjectHandle(p, 'editor')"> 编辑 </el-button>
+              <el-button type="primary" size="mini" @click="toProjectHandle(p, 'data')"> 数据 </el-button>
+              <el-button type="primary" size="mini" @click.native="toProjectHandle(p, 'statistics')"> 统计 </el-button>
+            </div>
+            <!-- 第二行按钮 - 操作按钮 -->
+            <div class="btn-row action-btn-row">
+              <el-button v-if="p.status != 2" type="primary" size="mini" @click="publishProject(p.formKey)">
+                发布
+              </el-button>
+              <el-button v-if="p.status == 2" type="warning" size="mini" @click.native="stopProject(p.formKey)">
+                停止
+              </el-button>
+              <el-button v-if="p.status == 2" type="success" size="mini" @click="showShareDialog(p)"> 分享 </el-button>
+              <el-button type="danger" size="mini" @click="deleteFrom(p.formKey)"> 删除 </el-button>
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -51,10 +115,15 @@
 
 <script>
 import mixin from './mixin'
+import { publishFormRequest } from '@/api/project/publish'
+import VueQr from 'vue-qr'
+import { getSystemInfoConfig } from '@/api/mange/config'
 
 export default {
   name: 'FormCardList',
-  components: {},
+  components: {
+    VueQr
+  },
   mixins: [mixin],
   props: {
     projectList: {
@@ -71,7 +140,12 @@ export default {
   },
   data() {
     return {
-      visible: false
+      visible: false,
+      shareDialogVisible: false,
+      shareLink: '',
+      currentForm: null,
+      qrCodeUrl: '',
+      baseUrl: ''
     }
   },
   computed: {
@@ -95,6 +169,9 @@ export default {
       }
     }
   },
+  created() {
+    this.getSystemConfig()
+  },
   methods: {
     deleteFrom(key) {
       this.$confirm('此操作将删除该文件, 是否继续?', '提示', {
@@ -107,8 +184,76 @@ export default {
         })
         .catch(() => {})
     },
+    publishProject(formKey) {
+      publishFormRequest({ formKey: formKey }).then(() => {
+        this.msgSuccess('发布成功')
+        this.$emit('refresh')
+      })
+    },
     endEvent(event) {
       console.log(event)
+    },
+
+    // 分享相关方法
+    getSystemConfig() {
+      getSystemInfoConfig().then((res) => {
+        if (res.data) {
+          this.baseUrl = res.data.baseUrl || window.location.origin
+        }
+      })
+    },
+
+    showShareDialog(form) {
+      this.currentForm = form
+      this.shareLink = `${this.baseUrl}/s/${form.formKey}`
+      this.shareDialogVisible = true
+    },
+
+    closeShareDialog() {
+      this.shareDialogVisible = false
+      this.currentForm = null
+      this.shareLink = ''
+      this.qrCodeUrl = ''
+    },
+
+    qrCodeGenSuccess(dataUrl) {
+      this.qrCodeUrl = dataUrl
+    },
+
+    downloadQrCode() {
+      if (!this.qrCodeUrl) {
+        this.$message.error('二维码生成失败，请稍后再试')
+        return
+      }
+      this.downloadFile('form_qrcode.png', this.qrCodeUrl)
+    },
+
+    downloadFile(fileName, content) {
+      let aLink = document.createElement('a')
+      let blob = this.base64ToBlob(content)
+      aLink.download = fileName
+      aLink.href = URL.createObjectURL(blob)
+      aLink.click()
+    },
+
+    base64ToBlob(code) {
+      let parts = code.split(';base64,')
+      let contentType = parts[0].split(':')[1]
+      let raw = window.atob(parts[1])
+      let rawLength = raw.length
+      let uInt8Array = new Uint8Array(rawLength)
+      for (let i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i)
+      }
+      return new Blob([uInt8Array], { type: contentType })
+    },
+
+    msgSuccess(msg) {
+      this.$message.success(msg)
+    },
+
+    msgError(msg) {
+      this.$message.error(msg)
     }
   }
 }
@@ -120,19 +265,29 @@ export default {
   margin: 20px auto;
 
   .el-card {
-    border-radius: 4px;
+    border-radius: 12px;
     position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    min-height: 280px;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      border-color: #e6f7ff;
+    }
 
     .body {
-      padding: 10px;
-      height: 150px;
-      width: 280px;
+      padding: 15px;
+      height: 180px;
+      width: 100%;
       text-align: center;
     }
   }
 
   .el-col {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     text-align: left;
 
     .form-type {
@@ -229,18 +384,78 @@ export default {
       text-align: center;
     }
 
-    .el-button--text {
-      font-weight: normal;
-      color: #c0c4cc;
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 15px;
+      margin: 5px 0;
+
+      &.action-btn-row {
+        justify-content: center;
+        gap: 10px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
     }
 
-    .el-button--text:hover {
-      color: #409eff;
+    .el-button--mini {
+      padding: 7px 15px;
+      font-size: 12px;
+      border-radius: 4px;
+
+      &.el-button--primary {
+        background-color: #409eff;
+        border-color: #409eff;
+
+        &:hover,
+        &:focus {
+          background-color: #66b1ff;
+          border-color: #66b1ff;
+        }
+      }
+
+      &.el-button--success {
+        background-color: #67c23a;
+        border-color: #67c23a;
+
+        &:hover,
+        &:focus {
+          background-color: #85ce61;
+          border-color: #85ce61;
+        }
+      }
+
+      &.el-button--warning {
+        background-color: #e6a23c;
+        border-color: #e6a23c;
+
+        &:hover,
+        &:focus {
+          background-color: #ebb563;
+          border-color: #ebb563;
+        }
+      }
+
+      &.el-button--danger {
+        background-color: #f56c6c;
+        border-color: #f56c6c;
+
+        &:hover,
+        &:focus {
+          background-color: #f78989;
+          border-color: #f78989;
+        }
+      }
     }
+
+    // 不再需要文本按钮样式
+
+    // 按钮样式已在上面定义
 
     .split-line {
       text-align: center;
-      margin-top: 100px;
+      margin-top: 130px;
       width: 100%;
       border-bottom: 1px solid #e7e7e7;
     }
@@ -251,14 +466,50 @@ export default {
   }
 }
 
-::v-deep .el-card {
-  border-radius: 10px !important;
-}
+// 已在上面设置了卡片样式，这里不需要再覆盖
 
 .empty-container {
   padding: 40px 0;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+// 分享弹窗样式
+.share-dialog-content {
+  padding: 20px 0;
+
+  .icon-view {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #67c23a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+
+    .success-icon {
+      color: #fff;
+      font-size: 30px;
+    }
+  }
+
+  .success-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #303133;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  .link-text {
+    font-size: 14px;
+    color: #606266;
+    text-align: center;
+    word-break: break-all;
+    margin-bottom: 20px;
+    padding: 0 20px;
+  }
 }
 </style>

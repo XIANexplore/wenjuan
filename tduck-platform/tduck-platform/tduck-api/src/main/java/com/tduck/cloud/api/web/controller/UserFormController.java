@@ -152,7 +152,16 @@ public class UserFormController {
      */
     @GetMapping("/user/form/{key}")
     public Result queryFormByKey(@PathVariable @NotBlank String key) {
-        return Result.success(formService.getByKey(key));
+        UserFormEntity form = formService.getByKey(key);
+        if (form != null && form.getUserId() != null) {
+            // 获取创建者用户信息并设置到表单实体中
+            form.setUserName(userService.getById(form.getUserId()) != null
+                    ? userService.getById(form.getUserId()).getName()
+                    : "未知用户");
+            // 添加一个额外的字段用于前端显示
+            form.setCreateUserName(form.getUserName());
+        }
+        return Result.success(form);
     }
 
     /**
@@ -236,6 +245,15 @@ public class UserFormController {
         if (ObjectUtil.isNull(form)) {
             return Result.success();
         }
+
+        // 获取创建者用户信息并设置到表单实体中
+        if (form.getUserId() != null) {
+            form.setUserName(userService.getById(form.getUserId()) != null
+                    ? userService.getById(form.getUserId()).getName()
+                    : "未知用户");
+            form.setCreateUserName(form.getUserName());
+        }
+
         List<UserFormItemEntity> formItemList = formItemService.list(Wrappers.<UserFormItemEntity>lambdaQuery()
                 .ne(UserFormItemEntity::getHideType, 1).eq(UserFormItemEntity::getFormKey, key));
         formItemList.sort(Comparator.comparing(UserFormItemEntity::getSort));

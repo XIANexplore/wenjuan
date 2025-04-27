@@ -37,38 +37,44 @@
       </el-table-column>
       <el-table-column align="center" label="创建时间" prop="createTime" />
       <el-table-column align="center" label="更新时间" prop="updateTime" />
-      <el-table-column width="200" align="center" label="操作">
+      <el-table-column width="350" align="center" label="操作">
         <template slot-scope="scope">
-          <div>
-            <el-button type="text" @click="toProjectHandle(scope.row, 'editor')">
-              <i class="el-icon-edit" />
-              编辑
-            </el-button>
-            <span />
-            <el-popconfirm
-              v-if="scope.row.status == 2"
-              title="确定停止收集该项目吗？"
-              @confirm="stopProject(scope.row.formKey)"
-            >
-              <el-button slot="reference" class="text-danger" type="text">
-                <i class="el-icon-video-pause" />
+          <div class="action-buttons">
+            <div class="main-actions">
+              <el-button type="text" @click="toProjectHandle(scope.row, 'editor')">
+                <i class="el-icon-edit" />
+                编辑
+              </el-button>
+              <el-button type="text" @click="toProjectHandle(scope.row, 'data')">
+                <i class="el-icon-document" />
+                数据
+              </el-button>
+              <el-button type="text" @click="toProjectHandle(scope.row, 'statistics')">
+                <i class="el-icon-data-analysis" />
+                统计
+              </el-button>
+            </div>
+            <div class="publish-actions">
+              <el-button
+                v-if="scope.row.status != 2"
+                type="primary"
+                size="mini"
+                @click="publishProject(scope.row.formKey)"
+              >
+                发布
+              </el-button>
+              <el-button
+                v-if="scope.row.status == 2"
+                type="warning"
+                size="mini"
+                @click="stopProject(scope.row.formKey)"
+              >
                 停止
               </el-button>
-            </el-popconfirm>
-            <el-popconfirm
-              v-if="scope.row.status != 2"
-              title="确定删除该项目吗？"
-              @confirm="logicDeleteForm(scope.row.formKey)"
-            >
-              <el-button slot="reference" class="text-danger" type="text">
-                <i class="el-icon-delete" />
-                删除
-              </el-button>
-            </el-popconfirm>
-            <el-button type="text" @click="toProjectHandle(scope.row, 'statistics')">
-              <i class="el-icon-data-analysis" />
-              统计
-            </el-button>
+              <el-popconfirm title="确定删除该项目吗？" @confirm="logicDeleteForm(scope.row.formKey)">
+                <el-button slot="reference" type="danger" size="mini" icon="el-icon-delete"></el-button>
+              </el-popconfirm>
+            </div>
           </div>
         </template>
       </el-table-column>
@@ -84,6 +90,7 @@
 
 <script>
 import mixin from './mixin'
+import { publishFormRequest } from '@/api/project/publish'
 
 export default {
   name: 'MyFormTable',
@@ -107,12 +114,18 @@ export default {
     }
   },
   methods: {
-    handleRowClick(row, column, event) {}
+    handleRowClick(row, column, event) {},
+    publishProject(formKey) {
+      publishFormRequest({ formKey: formKey }).then(() => {
+        this.msgSuccess('发布成功')
+        this.$emit('refresh')
+      })
+    }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .project-table-view {
   margin-top: 20px;
   width: 100%;
@@ -124,6 +137,55 @@ export default {
 
 .el-table tr {
   cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .main-actions {
+    display: flex;
+
+    .el-button {
+      margin-right: 5px;
+      color: #606266;
+
+      &:hover {
+        color: #409eff;
+      }
+    }
+  }
+
+  .publish-actions {
+    display: flex;
+    gap: 8px;
+
+    .el-button--primary {
+      background-color: #409eff;
+      border-color: #409eff;
+      padding: 7px 15px;
+    }
+
+    .el-button--warning {
+      background-color: #e6a23c;
+      border-color: #e6a23c;
+      padding: 7px 15px;
+    }
+
+    .el-button--danger {
+      background-color: #f56c6c;
+      border-color: #f56c6c;
+      padding: 7px 10px;
+    }
+
+    .el-button {
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
 }
 
 .empty-container {

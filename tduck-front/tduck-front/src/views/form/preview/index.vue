@@ -38,7 +38,7 @@
           电脑
         </span>
         <el-scrollbar style="height: 77vh; overflow-x: hidden !important">
-          <biz-project-form v-if="formConfig.formKey" :form-config="formConfig" />
+          <biz-project-form v-if="formConfig.formKey" :form-config="formConfig" class="questionnaire-form" />
         </el-scrollbar>
       </el-tab-pane>
     </el-tabs>
@@ -48,6 +48,7 @@
 <script>
 import { BizProjectForm } from 'tduck-form-generator'
 import 'tduck-form-generator/dist/TduckForm.css'
+import '@/assets/styles/form/questionnaire.scss'
 import VueQr from 'vue-qr'
 import mixin from '../TduckFormMixin'
 import { getSystemInfoConfig } from '@/api/mange/config'
@@ -68,7 +69,8 @@ export default {
       mobilePreviewUrl: '',
       formConfig: {
         formKey: '',
-        showBtns: true
+        showBtns: true,
+        showItemNumber: true // 显示题目序号
       }
     }
   },
@@ -143,6 +145,54 @@ export default {
 
 ::v-deep .project-form {
   padding: 20px;
+}
+
+::v-deep .questionnaire-form {
+  .form-item-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border-color: #e6f7ff;
+    }
+
+    .item-number {
+      position: absolute;
+      left: -12px;
+      top: 15px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #1890ff;
+      color: white;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 13px;
+      box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+    }
+
+    .el-form-item__label {
+      font-size: 15px;
+      font-weight: 500;
+      color: #333;
+      padding-left: 10px;
+    }
+
+    .el-form-item__content {
+      padding-left: 10px;
+    }
+
+    .el-form-item {
+      margin-bottom: 0;
+    }
+  }
 }
 
 ::v-deep .project-form-wrapper {

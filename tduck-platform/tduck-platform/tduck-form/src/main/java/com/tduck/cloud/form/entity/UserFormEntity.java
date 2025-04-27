@@ -85,8 +85,14 @@ public class UserFormEntity extends BaseEntity<UserFormEntity> {
     private String userName;
 
     /**
+     * 创建者用户名（用于前端显示，非数据库字段）
+     */
+    @TableField(exist = false)
+    private String createUserName;
+
+    /**
      * 移除html标签
-     * 
+     *
      * @return 文本
      */
     public String getTextName() {

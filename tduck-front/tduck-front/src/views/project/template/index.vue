@@ -36,10 +36,25 @@
                 :src="template.coverImg ? template.coverImg : require('@/assets/images/99d0.png')"
                 :alt="template.name"
               />
+              <div class="template-badge">
+                <el-tag size="small" type="success">模板</el-tag>
+              </div>
             </div>
             <div class="template-info">
               <h3 class="template-title">{{ template.name }}</h3>
               <p v-if="template.description" class="template-description">{{ template.description }}</p>
+              <div class="template-meta">
+                <span class="meta-item"> <i class="el-icon-time"></i> {{ formatDate(template.createTime) }} </span>
+                <span class="meta-item">
+                  <i class="el-icon-user"></i>
+                  <template v-if="template.userId === 1">
+                    <el-tag size="mini" type="warning">管理员</el-tag> {{ template.userName || '系统模板' }}
+                  </template>
+                  <template v-else>
+                    <el-tag size="mini" type="primary">用户</el-tag> {{ template.userName || '系统模板' }}
+                  </template>
+                </span>
+              </div>
             </div>
             <div class="template-actions">
               <el-button
@@ -116,6 +131,14 @@ export default {
     this.queryTemplatePage()
   },
   methods: {
+    formatDate(dateString) {
+      if (!dateString) return '未知时间'
+      const date = new Date(dateString)
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(
+        2,
+        '0'
+      )}`
+    },
     queryTemplateType() {
       getFormTemplateTypeListRequest().then((res) => {
         this.templateTypeList = res.data
@@ -153,6 +176,20 @@ export default {
         .then((res) => {
           let { records, total, size } = res.data
           this.templateList = records
+
+          // 确保每个模板项都有userId字段
+          this.templateList.forEach((template) => {
+            if (!template.userId && template.userId !== 0) {
+              // 如果没有userId字段，根据userAdmin字段或其他信息设置默认值
+              // 假设系统模板或管理员创建的模板userId为1
+              if (template.userAdmin || !template.userName || template.userName === '系统模板') {
+                template.userId = 1
+              } else {
+                template.userId = 2 // 普通用户
+              }
+            }
+          })
+
           this.total = total
           this.queryParams.size = size
           this.loading = false
@@ -237,15 +274,17 @@ export default {
 }
 
 .template-card {
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   background-color: #fff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
+  border: 1px solid #f0f0f0;
 
   &:hover {
     transform: translateY(-6px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    border-color: #e6f7ff;
 
     .template-actions {
       opacity: 1;
@@ -263,6 +302,7 @@ export default {
 .template-image {
   height: 180px;
   overflow: hidden;
+  position: relative;
 
   img {
     width: 100%;
@@ -273,6 +313,13 @@ export default {
     &:hover {
       transform: scale(1.05);
     }
+  }
+
+  .template-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
   }
 }
 
@@ -294,11 +341,33 @@ export default {
 .template-description {
   font-size: 13px;
   color: #909399;
-  margin: 0;
+  margin: 0 0 0.8rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.template-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #909399;
+  margin-top: 0.5rem;
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+
+    i {
+      margin-right: 4px;
+    }
+
+    .el-tag {
+      margin-right: 5px;
+      font-weight: bold;
+    }
+  }
 }
 
 .template-actions {

@@ -24,18 +24,19 @@ import java.util.stream.Collectors;
 /**
  * @author : tduck
  * @description : 表单收集结果工具类
- * @create :  2021/08/18 18:17
+ * @create : 2021/08/18 18:17
  **/
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class FormDataUtils {
 
-
     /**
      * 特殊字段 会多出一个xxx label字段存放显示值 默认字段存放原始值
      */
-    public static final List<FormItemTypeEnum> specialFields = CollUtil.newArrayList(FormItemTypeEnum.SELECT, FormItemTypeEnum.IMAGE_SELECT, FormItemTypeEnum.CHECKBOX, FormItemTypeEnum.RADIO, FormItemTypeEnum.CASCADER);
+    public static final List<FormItemTypeEnum> specialFields = CollUtil.newArrayList(FormItemTypeEnum.SELECT,
+            FormItemTypeEnum.IMAGE_SELECT, FormItemTypeEnum.CHECKBOX, FormItemTypeEnum.RADIO,
+            FormItemTypeEnum.CASCADER);
 
     private final static String FIELD_USER_TYPE = "USER";
 
@@ -46,15 +47,13 @@ public class FormDataUtils {
      * 所有表单都包含的字段
      */
     public static void addFormBaseDataField(List<FormFieldVO> fields) {
-        fields.add(new FormFieldVO(UserFormDataEntity.Fields.serialNumber, "提交序号", UserFormDataEntity.Fields.serialNumber));
-        fields.add(new FormFieldVO(UserFormDataEntity.Fields.extValue, "扩展字段", FormItemTypeEnum.INPUT.toString()));
-        fields.add(new FormFieldVO(SysBaseEntity.Fields.updateBy, "修改用户", FIELD_USER_TYPE));
-        fields.add(new FormFieldVO(SysBaseEntity.Fields.createBy, "提交用户", FIELD_USER_TYPE));
+        fields.add(new FormFieldVO(UserFormDataEntity.Fields.serialNumber, "提交序号",
+                UserFormDataEntity.Fields.serialNumber));
+        fields.add(new FormFieldVO(UserFormDataEntity.Fields.userName, "提交用户", FormItemTypeEnum.INPUT.toString()));
+        fields.add(new FormFieldVO(UserFormDataEntity.Fields.userEmail, "用户邮箱", FormItemTypeEnum.INPUT.toString()));
         fields.add(new FormFieldVO(BaseEntity.Fields.createTime, "提交时间", FormItemTypeEnum.DATE.toString()));
         fields.add(new FormFieldVO(BaseEntity.Fields.updateTime, "修改时间", FormItemTypeEnum.DATE.toString()));
-
     }
-
 
     /**
      * 添加系统默认字段
@@ -63,17 +62,16 @@ public class FormDataUtils {
         addFormBaseDataField(fields);
     }
 
-
     /***
      * 表单字段值是否存在
-     * @param formKey 表单key
+     * 
+     * @param formKey    表单key
      * @param formItemId 表单字段id
-     * @param value 字段值
+     * @param value      字段值
      */
     public Boolean valueExist(String formKey, String formItemId, Object value) {
         return formDataBaseService.valueExist(formKey, formItemId, value);
     }
-
 
     /**
      * 特殊字段添加复合字段
@@ -85,7 +83,8 @@ public class FormDataUtils {
         }
         fields.forEach(field -> {
             newFields.add(field);
-            boolean isSpecialField = StrUtil.startWithAny(field, specialFields.stream().map(item -> item.toString().toLowerCase()).collect(Collectors.joining(",")));
+            boolean isSpecialField = StrUtil.startWithAny(field,
+                    specialFields.stream().map(item -> item.toString().toLowerCase()).collect(Collectors.joining(",")));
             if (isSpecialField) {
                 newFields.add(field + "label");
             }
@@ -93,14 +92,12 @@ public class FormDataUtils {
         return newFields;
     }
 
-
     /**
      * 保存数据到其他数据库 比如es MonggDB等 用来扩展查询 作报表等
      */
     public Boolean syncSaveFormData(UserFormDataEntity result) {
         return formDataBaseService.syncSaveData(result);
     }
-
 
     /**
      * 更新文档
@@ -121,7 +118,6 @@ public class FormDataUtils {
         formDataBaseService.asyncDeleteData(idList, formKey);
     }
 
-
     /**
      * 查询表单分页数据
      *
@@ -141,9 +137,5 @@ public class FormDataUtils {
     public List<Map> searchAll(QueryFormResultRequest request) {
         return formDataBaseService.searchAll(request);
     }
-
-
-
-
 
 }

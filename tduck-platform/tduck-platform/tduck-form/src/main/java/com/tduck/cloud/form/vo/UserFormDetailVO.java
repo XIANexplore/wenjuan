@@ -36,7 +36,6 @@ public class UserFormDetailVO {
      */
     private UserFormLogicEntity formLogic;
 
-
     @Data
     public static class UserForm {
         private String formKey;
@@ -49,14 +48,34 @@ public class UserFormDetailVO {
          */
         private String description;
 
-
+        /**
+         * 表单类型
+         */
         private FormTypeEnum type;
+
+        /**
+         * 创建者用户ID
+         */
+        private Long userId;
+
+        /**
+         * 创建者用户名
+         */
+        private String userName;
+
+        /**
+         * 创建者用户名（用于前端显示）
+         */
+        private String createUserName;
 
         public UserForm(UserFormEntity entity) {
             this.formKey = entity.getFormKey();
             this.name = entity.getName();
             this.description = entity.getDescription();
             this.type = entity.getType();
+            this.userId = entity.getUserId();
+            this.userName = entity.getUserName();
+            this.createUserName = entity.getCreateUserName();
         }
 
     }

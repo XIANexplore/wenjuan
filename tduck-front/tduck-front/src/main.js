@@ -19,6 +19,10 @@ import './assets/icons'
 import Process from '@/components/HandleProcess/process'
 import { parseTime, resetForm, download } from '@/utils/tduck'
 import './plugin'
+import floatingSubmit from './directives/floatingSubmit'
+
+// 注册自定义指令
+Vue.directive('floating-submit', floatingSubmit)
 Vue.prototype.$api = api
 Vue.prototype.$dayjs = dayjs
 Vue.prototype.$store = store
