@@ -165,7 +165,8 @@ export default {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 80px);
+  height: calc(100vh - 80px);
+  min-height: 0;
 }
 
 .preview-header {
@@ -206,16 +207,22 @@ export default {
 
 .preview-card {
   flex: 1;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   margin-bottom: 1rem;
+  min-height: 0;
 
   &:hover {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   }
+}
+
+::v-deep .preview-card > .el-card__body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .template-info-section {
@@ -267,11 +274,17 @@ export default {
   position: relative;
   overflow: hidden;
   background-color: #f5f7fa;
+  min-height: 0;
 }
 
 .preview-scrollbar {
   height: 100%;
   overflow: hidden;
+}
+
+::v-deep .preview-scrollbar .el-scrollbar__wrap {
+  height: 100%;
+  overflow-x: hidden;
 }
 
 .form-container {

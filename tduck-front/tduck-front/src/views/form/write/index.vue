@@ -379,6 +379,10 @@ export default {
 
       // 保存已回答的问卷到本地存储
       try {
+        const isLoggedIn = !!localStorage.getItem('token') || !!this.$store.getters['user/isLogin']
+        if (isLoggedIn) {
+          return
+        }
         // 获取现有的已回答问卷记录
         let answeredForms = {}
         const answeredFormsStr = localStorage.getItem('answeredForms')

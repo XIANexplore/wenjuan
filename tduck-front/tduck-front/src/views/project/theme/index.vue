@@ -49,10 +49,10 @@
         >
       </div>
       <div class="right-actions">
-        <el-radio-group v-model="viewMode" size="small" class="view-mode-switch">
+        <!-- <el-radio-group v-model="viewMode" size="small" class="view-mode-switch">
           <el-radio-button label="table"><i class="el-icon-menu"></i> 表格</el-radio-button>
           <el-radio-button label="card"><i class="el-icon-s-grid"></i> 卡片</el-radio-button>
-        </el-radio-group>
+        </el-radio-group> -->
         <right-toolbar :show-search.sync="showSearch" @queryTable="getList" />
       </div>
     </div>

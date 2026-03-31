@@ -257,49 +257,40 @@ export default {
     checkAnsweredForms() {
       if (this.formList.length === 0) return
 
-      // 使用本地存储检查用户是否已回答问卷
-      // 这是一个临时解决方案，直到后端API可用
-      try {
-        // 从本地存储获取已回答的问卷
-        const answeredFormsStr = localStorage.getItem('answeredForms')
-        if (answeredFormsStr) {
-          const answeredForms = JSON.parse(answeredFormsStr)
-
-          // 更新状态
-          this.formList.forEach((form) => {
-            if (answeredForms[form.formKey]) {
-              this.$set(this.answeredForms, form.formKey, true)
-              const index = this.formList.findIndex((item) => item.formKey === form.formKey)
-              if (index !== -1) {
-                this.$set(this.formList[index], 'isAnswered', true)
+      if (this.isLoggedIn) {
+        this.formList.forEach((form) => {
+          checkUserAnsweredRequest(form.formKey)
+            .then((res) => {
+              if (res.code === 200 && res.data === true) {
+                this.$set(this.answeredForms, form.formKey, true)
+                const index = this.formList.findIndex((item) => item.formKey === form.formKey)
+                if (index !== -1) {
+                  this.$set(this.formList[index], 'isAnswered', true)
+                }
               }
+            })
+            .catch(() => {})
+        })
+        return
+      }
+
+      try {
+        const answeredFormsStr = localStorage.getItem('answeredForms')
+        if (!answeredFormsStr) return
+        const answeredForms = JSON.parse(answeredFormsStr)
+
+        this.formList.forEach((form) => {
+          if (answeredForms[form.formKey]) {
+            this.$set(this.answeredForms, form.formKey, true)
+            const index = this.formList.findIndex((item) => item.formKey === form.formKey)
+            if (index !== -1) {
+              this.$set(this.formList[index], 'isAnswered', true)
             }
-          })
-        }
+          }
+        })
       } catch (error) {
         console.error('获取本地存储的已回答问卷数据出错:', error)
       }
-
-      /* 暂时注释掉API调用，直到后端实现该接口
-      // 对每个问卷检查用户是否已回答
-      this.formList.forEach(form => {
-        checkUserAnsweredRequest(form.formKey)
-          .then(res => {
-            if (res.code === 200 && res.data === true) {
-              // 更新已回答状态
-              this.$set(this.answeredForms, form.formKey, true)
-              // 更新表单列表中的状态
-              const index = this.formList.findIndex(item => item.formKey === form.formKey)
-              if (index !== -1) {
-                this.$set(this.formList[index], 'isAnswered', true)
-              }
-            }
-          })
-          .catch(err => {
-            console.error('检查问卷回答状态出错:', err)
-          })
-      })
-      */
     },
     handlePageChange(page) {
       this.currentPage = page

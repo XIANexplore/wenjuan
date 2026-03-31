@@ -6,13 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="tduck-api" />
-        <module name="tduck-form" />
-        <module name="tduck-webhook" />
-        <module name="tduck-storage" />
-        <module name="tduck-common" />
-        <module name="tduck-wx-mp" />
-        <module name="tduck-account" />
+        <module name="wenjuan" />
       </profile>
     </annotationProcessing>
   </component>

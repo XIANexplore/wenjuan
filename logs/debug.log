@@ -1,0 +1,68 @@
+2026-03-31 22:35:21,325 [main] INFO  [com.tduck.cloud.api.TduckApiApplication] StartupInfoLogger.java:55 - Starting TduckApiApplication using Java 1.8.0_281 on YXian with PID 25564 (D:\Code\myProject\wenjuan\tduck-platform\tduck-platform\tduck-api\target\classes started by 24300 in D:\Code\myProject\wenjuan)
+2026-03-31 22:35:21,328 [main] DEBUG [com.tduck.cloud.api.TduckApiApplication] StartupInfoLogger.java:56 - Running with Spring Boot v2.7.8, Spring v5.3.25
+2026-03-31 22:35:21,328 [main] INFO  [com.tduck.cloud.api.TduckApiApplication] SpringApplication.java:637 - The following 1 profile is active: "dev"
+2026-03-31 22:35:21,344 [background-preinit] INFO  [org.hibernate.validator.internal.util.Version] Version.java:21 - HV000001: Hibernate Validator 6.2.5.Final
+2026-03-31 22:35:22,634 [main] INFO  [o.s.d.r.config.RepositoryConfigurationDelegate] RepositoryConfigurationDelegate.java:132 - Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2026-03-31 22:35:22,663 [main] INFO  [o.s.d.r.config.RepositoryConfigurationDelegate] RepositoryConfigurationDelegate.java:201 - Finished Spring Data repository scanning in 21 ms. Found 0 MongoDB repository interfaces.
+2026-03-31 22:35:24,169 [main] INFO  [o.s.boot.web.embedded.tomcat.TomcatWebServer] TomcatWebServer.java:108 - Tomcat initialized with port(s): 8999 (http)
+2026-03-31 22:35:24,205 [main] INFO  [org.apache.coyote.http11.Http11NioProtocol] DirectJDKLog.java:173 - Initializing ProtocolHandler ["http-nio-8999"]
+2026-03-31 22:35:24,206 [main] INFO  [org.apache.catalina.core.StandardService] DirectJDKLog.java:173 - Starting service [Tomcat]
+2026-03-31 22:35:24,207 [main] INFO  [org.apache.catalina.core.StandardEngine] DirectJDKLog.java:173 - Starting Servlet engine: [Apache Tomcat/9.0.71]
+2026-03-31 22:35:24,357 [main] INFO  [o.a.c.core.ContainerBase.[Tomcat].[localhost].[/]] DirectJDKLog.java:173 - Initializing Spring embedded WebApplicationContext
+2026-03-31 22:35:24,358 [main] INFO  [o.s.b.w.s.c.ServletWebServerApplicationContext] ServletWebServerApplicationContext.java:292 - Root WebApplicationContext: initialization completed in 2974 ms
+2026-03-31 22:35:26,198 [main] WARN  [net.sf.ehcache.config.CacheConfiguration] CacheConfiguration.java:868 - Cache 'eternal_cache' is set to eternal but also has TTI/TTL set.  To avoid this warning, clean up the config removing conflicting values of eternal, TTI and TTL. Effective configuration for Cache 'eternal_cache' will be eternal='true', timeToIdleSeconds='0', timeToLiveSeconds='0'.
+2026-03-31 22:35:26,284 [main] WARN  [net.sf.ehcache.DiskStorePathManager] DiskStorePathManager.java:162 - diskStorePath 'C:\Users\24300\AppData\Local\Temp' is already used by an existing CacheManager either in the same VM or in a different process.
+The diskStore path for this CacheManager will be set to C:\Users\24300\AppData\Local\Temp\ehcache_auto_created7086715145441901329diskstore.
+To avoid this warning consider using the CacheManager factory methods to create a singleton CacheManager or specifying a separate ehcache configuration (ehcache.xml) for each CacheManager instance.
+2026-03-31 22:35:26,364 [main] WARN  [net.sf.ehcache.store.disk.DiskStorageFactory] DiskStorageFactory.java:134 - Data in persistent disk stores is ignored for stores from automatically created directories.
+Remove diskPersistent or resolve the conflicting disk paths in cache configuration.
+Deleting data file C:\Users\24300\AppData\Local\Temp\ehcache_auto_created7086715145441901329diskstore\eternal_cache.data
+2026-03-31 22:35:27,158 [main] INFO  [com.zaxxer.hikari.HikariDataSource] HikariDataSource.java:110 - DatebookHikariCP - Starting...
+2026-03-31 22:35:27,372 [main] INFO  [com.zaxxer.hikari.HikariDataSource] HikariDataSource.java:123 - DatebookHikariCP - Start completed.
+2026-03-31 22:35:27,377 [main] DEBUG [c.t.c.e.mapper.SysEnvConfigMapper.selectList] BaseJdbcLogger.java:137 - ==>  Preparing: SELECT id,env_key,env_value,create_time,update_time FROM sys_env_config
+2026-03-31 22:35:27,391 [main] DEBUG [c.t.c.e.mapper.SysEnvConfigMapper.selectList] BaseJdbcLogger.java:137 - ==> Parameters: 
+2026-03-31 22:35:27,432 [main] DEBUG [c.t.c.e.mapper.SysEnvConfigMapper.selectList] BaseJdbcLogger.java:137 - <==      Total: 2
+2026-03-31 22:35:27,508 [main] DEBUG [c.t.c.e.mapper.SysEnvConfigMapper.selectList] BaseJdbcLogger.java:137 - ==>  Preparing: SELECT id,env_key,env_value,create_time,update_time FROM sys_env_config WHERE (env_key = ?)
+2026-03-31 22:35:27,509 [main] DEBUG [c.t.c.e.mapper.SysEnvConfigMapper.selectList] BaseJdbcLogger.java:137 - ==> Parameters: wxMpEnvConfig(String)
+2026-03-31 22:35:27,511 [main] DEBUG [c.t.c.e.mapper.SysEnvConfigMapper.selectList] BaseJdbcLogger.java:137 - <==      Total: 0
+2026-03-31 22:35:27,881 [main] INFO  [c.a.c.config.AjCaptchaServiceAutoConfiguration] AjCaptchaServiceAutoConfiguration.java:33 - 自定义配置项：
+AjCaptchaProperties{type=DEFAULT, jigsaw='', picClick='', waterMark='tduck', waterFont='WenQuanZhengHei.ttf', fontType='WenQuanZhengHei.ttf', slipOffset='5', aesStatus=true, interferenceOptions='0', cacheNumber='1000', timingClear='180', cacheType=local, reqFrequencyLimitEnable=false, reqGetLockLimit=5, reqGetLockSeconds=300, reqGetMinuteLimit=100, reqCheckMinuteLimit=100, reqVerifyMinuteLimit=100}
+2026-03-31 22:35:27,886 [main] INFO  [c.anji.captcha.service.impl.CaptchaServiceFactory] CaptchaServiceFactory.java:52 - supported-captchaCache-service:[local]
+2026-03-31 22:35:27,894 [main] INFO  [c.anji.captcha.service.impl.CaptchaServiceFactory] CaptchaServiceFactory.java:58 - supported-captchaTypes-service:[clickWord, default, blockPuzzle]
+2026-03-31 22:35:27,924 [main] INFO  [com.anji.captcha.util.ImageUtils] ImageUtils.java:48 - 初始化底图:[SLIDING_BLOCK=[Ljava.lang.String;@2c06b113, ORIGINAL=[Ljava.lang.String;@7a64cb0c, PIC_CLICK=[Ljava.lang.String;@785ed99c]
+2026-03-31 22:35:27,925 [main] INFO  [c.a.c.service.impl.ClickWordCaptchaServiceImpl] AbstractCaptchaService.java:76 - --->>>初始化验证码底图<<<---clickWord
+2026-03-31 22:35:28,057 [main] INFO  [c.a.c.service.impl.ClickWordCaptchaServiceImpl] AbstractCaptchaService.java:92 - 初始化local缓存...
+2026-03-31 22:35:28,156 [main] INFO  [com.anji.captcha.util.ImageUtils] ImageUtils.java:48 - 初始化底图:[SLIDING_BLOCK=[Ljava.lang.String;@68dfda77, ORIGINAL=[Ljava.lang.String;@50cdfafa, PIC_CLICK=[Ljava.lang.String;@2e952845]
+2026-03-31 22:35:28,156 [main] INFO  [c.a.c.service.impl.BlockPuzzleCaptchaServiceImpl] AbstractCaptchaService.java:76 - --->>>初始化验证码底图<<<---blockPuzzle
+2026-03-31 22:35:28,239 [main] INFO  [c.a.c.service.impl.BlockPuzzleCaptchaServiceImpl] AbstractCaptchaService.java:92 - 初始化local缓存...
+2026-03-31 22:35:28,553 [main] INFO  [com.tduck.cloud.api.config.JacksonConfig] JacksonConfig.java:45 - 初始化 jackson 配置
+2026-03-31 22:35:28,801 [main] INFO  [com.tduck.cloud.storage.cloud.OssStorageFactory] OssStorageFactory.java:67 - 使用配置的上传路径: D:/Code/project/wenjuan/images
+2026-03-31 22:35:28,802 [main] INFO  [com.tduck.cloud.storage.cloud.OssStorageFactory] OssStorageFactory.java:76 - 成功创建上传目录: D:\Code\project\wenjuan\images
+2026-03-31 22:35:28,804 [main] ERROR [com.tduck.cloud.storage.cloud.OssStorageFactory] OssStorageFactory.java:94 - 更新存储配置失败:null
+2026-03-31 22:35:28,805 [main] INFO  [com.tduck.cloud.api.config.WebMvcConfig] WebMvcConfig.java:67 - 使用配置的上传路径: D:/Code/project/wenjuan/images
+2026-03-31 22:35:28,811 [main] INFO  [com.tduck.cloud.api.config.WebMvcConfig] WebMvcConfig.java:83 - 添加资源处理器: pattern=/images/**, location=file:D:/Code/project/wenjuan/images\
+2026-03-31 22:35:29,720 [main] INFO  [org.apache.coyote.http11.Http11NioProtocol] DirectJDKLog.java:173 - Starting ProtocolHandler ["http-nio-8999"]
+2026-03-31 22:35:29,729 [main] WARN  [o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext] AbstractApplicationContext.java:591 - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'; nested exception is org.springframework.boot.web.server.PortInUseException: Port 8999 is already in use
+2026-03-31 22:35:29,745 [main] INFO  [com.zaxxer.hikari.HikariDataSource] HikariDataSource.java:350 - DatebookHikariCP - Shutdown initiated...
+2026-03-31 22:35:29,757 [main] INFO  [com.zaxxer.hikari.HikariDataSource] HikariDataSource.java:352 - DatebookHikariCP - Shutdown completed.
+2026-03-31 22:35:29,761 [main] INFO  [org.apache.coyote.http11.Http11NioProtocol] DirectJDKLog.java:173 - Pausing ProtocolHandler ["http-nio-8999"]
+2026-03-31 22:35:29,762 [main] INFO  [org.apache.catalina.core.StandardService] DirectJDKLog.java:173 - Stopping service [Tomcat]
+2026-03-31 22:35:29,768 [main] INFO  [org.apache.coyote.http11.Http11NioProtocol] DirectJDKLog.java:173 - Stopping ProtocolHandler ["http-nio-8999"]
+2026-03-31 22:35:29,769 [main] INFO  [org.apache.coyote.http11.Http11NioProtocol] DirectJDKLog.java:173 - Destroying ProtocolHandler ["http-nio-8999"]
+2026-03-31 22:35:29,776 [main] INFO  [o.s.b.a.l.ConditionEvaluationReportLoggingListener] ConditionEvaluationReportLoggingListener.java:136 - 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2026-03-31 22:35:29,804 [main] ERROR [o.s.b.diagnostics.LoggingFailureAnalysisReporter] LoggingFailureAnalysisReporter.java:40 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8999 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8999 or configure this application to listen on another port.
+

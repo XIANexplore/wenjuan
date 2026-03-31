@@ -93,12 +93,12 @@ export default {
           icon: 'fa-user',
           admin: true
         },
-        {
-          route: '/manage/system',
-          name: '系统配置',
-          icon: 'el-icon-s-tools',
-          admin: true
-        },
+        // {
+        //   route: '/manage/system',
+        //   name: '系统配置',
+        //   icon: 'el-icon-s-tools',
+        //   admin: true
+        // },
         {
           route: '/project/template/category',
           name: '模板分类',
@@ -227,6 +227,9 @@ $menuActiveText: #409eff;
     width: 100%;
     display: flex;
     justify-content: space-between;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 

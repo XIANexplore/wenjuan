@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.tduck.cloud.api.util.HttpUtils;
 import com.tduck.cloud.common.constant.CommonConstants;
 import com.tduck.cloud.common.email.MailService;
@@ -134,7 +135,16 @@ public class UserFormResultController {
         ValidatorUtils.validateEntity(entity);
         entity.setSubmitRequestIp(HttpUtils.getIpAddr(request));
         // 如果已经登陆了也记录用户信息 try catch 避免抛出异常
-        entity.setCreateBy(SecurityUtils.getUserId() != null ? String.valueOf(SecurityUtils.getUserId()) : null);
+        Long userId = SecurityUtils.getUserId();
+        entity.setCreateBy(userId != null ? String.valueOf(userId) : null);
+        if (userId != null) {
+            long writeCount = formResultService.count(Wrappers.<UserFormDataEntity>lambdaQuery()
+                    .eq(UserFormDataEntity::getFormKey, entity.getFormKey())
+                    .eq(UserFormDataEntity::getCreateBy, String.valueOf(userId)));
+            if (writeCount >= 1) {
+                return Result.failed("该账号已经提交过数据，不可重复提交");
+            }
+        }
         // 如果没有登录，使用提交的用户名和邮箱
         if (entity.getCreateBy() == null && StrUtil.isNotBlank(entity.getUserName())
                 && StrUtil.isNotBlank(entity.getUserEmail())) {
@@ -142,6 +152,14 @@ public class UserFormResultController {
         }
         Map<String, Object> result = formResultService.saveFormResult(entity);
         return Result.success(result);
+    }
+
+    @GetMapping("/check-answered/{formKey}")
+    public Result<Boolean> checkAnswered(@PathVariable("formKey") String formKey, @RequestAttribute Long userId) {
+        long writeCount = formResultService.count(Wrappers.<UserFormDataEntity>lambdaQuery()
+                .eq(UserFormDataEntity::getFormKey, formKey)
+                .eq(UserFormDataEntity::getCreateBy, String.valueOf(userId)));
+        return Result.success(writeCount >= 1);
     }
 
     /**

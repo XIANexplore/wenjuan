@@ -1,0 +1,15 @@
+2026-03-31 22:35:28,804 [main] ERROR [com.tduck.cloud.storage.cloud.OssStorageFactory] OssStorageFactory.java:94 - ∏¸–¬¥Ê¥¢≈‰÷√ ß∞‹:null
+2026-03-31 22:35:29,804 [main] ERROR [o.s.b.diagnostics.LoggingFailureAnalysisReporter] LoggingFailureAnalysisReporter.java:40 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8999 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8999 or configure this application to listen on another port.
+

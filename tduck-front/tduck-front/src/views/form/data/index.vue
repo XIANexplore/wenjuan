@@ -7,7 +7,7 @@
       @cell-menu="cellContextMenuEvent"
       @menu-click="contextMenuClickEvent"
     >
-      <template #toolbar>
+      <!-- <template #toolbar>
         <el-button v-if="checkBtnPerms('add')" icon="el-icon-plus" type="primary" @click="handleAdd"> 添加 </el-button>
         <el-button v-if="checkBtnPerms('download')" icon="el-icon-download" type="primary" @click="handleDownload">
           下载附件
@@ -15,7 +15,7 @@
         <el-button v-if="checkBtnPerms('delete')" icon="el-icon-remove" type="danger" @click="handleDelete">
           删除
         </el-button>
-      </template>
+      </template> -->
     </base-table>
     <ViewOrUpdate
       v-if="formModel && formKey"

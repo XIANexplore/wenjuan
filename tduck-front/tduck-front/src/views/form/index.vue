@@ -70,11 +70,11 @@ export default {
           icon: 'el-icon-view',
           route: '/project/form/theme'
         },
-        {
-          title: '设置',
-          icon: 'el-icon-setting',
-          route: '/project/form/setting'
-        },
+        // {
+        //   title: '设置',
+        //   icon: 'el-icon-setting',
+        //   route: '/project/form/setting'
+        // },
         {
           title: '发布',
           icon: 'el-icon-video-play',
