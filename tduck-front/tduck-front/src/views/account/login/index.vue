@@ -23,7 +23,7 @@
               <i class="el-icon-user"></i> 账号密码登录
             </div>
             <div v-if="enableWx" :class="['login-tab', loginType === 'wx' ? 'active' : '']" @click="loginType = 'wx'">
-              <i class="fab fa-weixin"></i> 微信扫码登录
+              <i class="fab fa-weixin"></i> 微信扫码登录111
             </div>
           </div>
 
