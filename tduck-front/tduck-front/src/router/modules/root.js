@@ -14,11 +14,11 @@ export default [
     meta: { requireLogin: false },
     component: () => import(/* webpackChunkName: 'root' */ '@/views/account/validate')
   },
-  {
-    path: '/forget/password',
-    meta: { requireLogin: false },
-    component: () => import(/* webpackChunkName: 'root' */ '@/views/account/ForgetPwd')
-  },
+  // {
+  //   path: '/forget/password',
+  //   meta: { requireLogin: false },
+  //   component: () => import(/* webpackChunkName: 'root' */ '@/views/account/ForgetPwd')
+  // },
   {
     path: '/',
     meta: { requireLogin: false },

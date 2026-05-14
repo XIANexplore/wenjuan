@@ -5,24 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45566750-1600-4fee-aa2d-bd79fc3919a8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/MarsCodeWorkspaceAppSettings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/wenjuan.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/WeChat_Configuration_Guide.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/add_test_data.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/add_user_info_to_form_data.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tduck-platform/tduck-platform/tduck-api/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/tduck-platform/tduck-platform/tduck-api/src/main/resources/application-dev.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_image_upload.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/update_file_config.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/wenjuan.sql" beforeDir="false" afterPath="$PROJECT_DIR$/wenjuan.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tduck-platform/tduck-platform/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/tduck-platform/tduck-platform/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +46,7 @@
       <updated>1774968974303</updated>
       <workItem from="1774968975792" duration="572000" />
       <workItem from="1774969569329" duration="34000" />
+      <workItem from="1778772357382" duration="81000" />
     </task>
     <servers />
   </component>
