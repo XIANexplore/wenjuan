@@ -147,7 +147,9 @@ export default {
         randomNumberText: '',
         // 考试成绩
         examScoreText: ''
-      }
+      },
+      // 防止重复提交的标志
+      isSubmitting: false
     }
   },
   computed: {
@@ -341,6 +343,16 @@ export default {
       })
     },
     async submitForm(data) {
+      if (this.isSubmitting) return
+      this.isSubmitting = true
+
+      const loading = this.$loading({
+        lock: true,
+        text: '提交中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+
       try {
         // 验证用户信息
         const userInfo = await this.$refs.userInfoInput.validate()
@@ -364,13 +376,21 @@ export default {
         } else {
           res = await createFormResultRequest(this.submitFormData)
         }
+        loading.close()
         this.handleSubmitSuccess(res.data)
       } catch (error) {
+        loading.close()
         this.$message.error(error)
+        this.isSubmitting = false
       }
     },
     // 提交成功后处理
     handleSubmitSuccess(data) {
+      this.$message({
+        message: '提交成功',
+        type: 'success',
+        duration: 2000
+      })
       this.submitResult = data
       // 删除临时缓存数据
       removeFormData(this.formKey)
